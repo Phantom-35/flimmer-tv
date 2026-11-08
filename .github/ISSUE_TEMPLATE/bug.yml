@@ -1,0 +1,21 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie erwartet
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Was ist passiert?
+      description: Was hast du getan, was hast du erwartet, was kam stattdessen?
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Gerät / Browser / installiert?
+      placeholder: z. B. iPhone 15, Safari, zum Home-Bildschirm hinzugefügt
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Steht unter Mehr → Über Flimmer

@@ -1,0 +1,89 @@
+name: Daten aktualisieren & veröffentlichen
+
+# Holt alle 6 Stunden das TV-Programm, baut die App und veröffentlicht beides
+# auf Cloudflare Pages. Schlägt der Gesundheitscheck fehl, wird trotzdem der
+# beste verfügbare Stand (inkl. Fallback auf den letzten guten Stand) veröffentlicht
+# und der Lauf anschließend als fehlgeschlagen markiert -> GitHub schickt eine
+# E-Mail-Benachrichtigung (Standardeinstellung für Workflow-Fehler).
+
+on:
+  schedule:
+    - cron: '17 */6 * * *' # 4× täglich, ungerade Minute entlastet die Runner
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '*.md', '.github/ISSUE_TEMPLATE/**']
+  workflow_dispatch:
+
+concurrency:
+  group: data-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # Öffentliche URL der App (Repository-Variable SITE_URL), für den Fallback auf den letzten Stand.
+  SITE_URL: ${{ vars.SITE_URL }}
+  CF_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'flimmer' }}
+  # secrets sind in step-if nicht direkt nutzbar -> als Flag in env
+  HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Programmdaten holen
+        id: data
+        run: |
+          set +e
+          PREV=""
+          if [ -n "$SITE_URL" ]; then PREV="--previous ${SITE_URL%/}/data"; fi
+          npx tsx pipeline/run.ts --out public/data $PREV --strict
+          code=$?
+          echo "exit=$code" >> "$GITHUB_OUTPUT"
+          # Exit 1 = harter Fehler (nichts verwertbar) -> abbrechen, nichts veröffentlichen
+          if [ "$code" = "1" ]; then exit 1; fi
+          exit 0
+
+      - name: Status zusammenfassen
+        if: always()
+        run: |
+          if [ -f public/data/status.json ]; then
+            echo '### Datenstatus' >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat public/data/status.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - run: npm run build
+
+      - name: Auf Cloudflare Pages veröffentlichen
+        if: ${{ env.HAS_CF == 'true' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages deploy dist --project-name "$CF_PROJECT" --branch main --commit-dirty=true
+
+      - name: Hinweis ohne Hosting-Zugang
+        if: ${{ env.HAS_CF != 'true' }}
+        run: echo "::notice::CLOUDFLARE_API_TOKEN fehlt – Build wurde nur als Artefakt gespeichert. Siehe README › Deployment."
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          retention-days: 3
+
+      - name: Gesundheitscheck auswerten
+        if: steps.data.outputs.exit == '2'
+        run: |
+          echo "::error::Datenqualität unter Schwellwert – Details im Job-Summary (status.json)."
+          exit 1

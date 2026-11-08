@@ -1,0 +1,18 @@
+name: Programmdaten falsch / Sender fehlt
+description: Falsche Zeiten, fehlende Sendungen oder ein Sender-Wunsch
+labels: [data]
+body:
+  - type: input
+    id: channel
+    attributes:
+      label: Sender
+    validations:
+      required: true
+  - type: input
+    id: when
+    attributes:
+      label: Datum und Uhrzeit
+  - type: textarea
+    id: details
+    attributes:
+      label: Was stimmt nicht?
