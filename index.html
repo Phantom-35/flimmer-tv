@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Flimmer – TV-Programm, aufgeräumt</title>
+    <meta name="description" content="Das deutsche TV-Programm als schnelle, werbefreie Web-App: Jetzt im TV, 20:15, Programmraster, Merkliste. Ohne Tracking." />
+    <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15130f" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Flimmer" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preload" href="/data/index.json" as="fetch" crossorigin="anonymous" />
+    <script>
+      // Vor dem ersten Rendern: Theme und Schriftgröße setzen (kein Aufblitzen).
+      try {
+        var s = JSON.parse(localStorage.getItem('flimmer:settings') || '{}');
+        var d = document.documentElement;
+        if (s.theme === 'light' || s.theme === 'dark') d.dataset.theme = s.theme;
+        if (s.fontScale) d.style.setProperty('--font-scale', String(s.fontScale));
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <noscript>
+        <p style="padding:2rem;font-family:system-ui">Flimmer benötigt JavaScript, um das TV-Programm anzuzeigen.</p>
+      </noscript>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
