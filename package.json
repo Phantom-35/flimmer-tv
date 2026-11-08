@@ -1,0 +1,26 @@
+{
+  "name": "flimmer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flimmer – das deutsche TV-Programm als werbefreie, schnelle PWA.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "data": "tsx pipeline/run.ts",
+    "data:sample": "tsx pipeline/run.ts --out public/data",
+    "icons": "tsx scripts/render-icons.ts",
+    "screenshots": "tsx scripts/screenshots.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
+  }
+}

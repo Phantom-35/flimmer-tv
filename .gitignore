@@ -1,0 +1,15 @@
+node_modules/
+dist/
+public/data/
+.cache/
+coverage/
+playwright-report/
+test-results/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+.wrangler/
+lighthouse/
+.claude/
