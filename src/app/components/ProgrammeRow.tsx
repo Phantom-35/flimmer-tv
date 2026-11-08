@@ -37,6 +37,7 @@ export function NowCard({
             </span>
             <span class="nowcard-title">{main.t}</span>
             {main.st || main.ep ? <span class="nowcard-sub">{[main.ep, main.st].filter(Boolean).join(' · ')}</span> : null}
+            {main.tip && mode === 'at' ? <span class="nowcard-tip">Tipp: {main.tip}</span> : null}
             {current && mode === 'now' ? (
               <span class="nowcard-progress">
                 <ProgressBar p={current} nowMs={nowMs} label={`${main.t}: ${minutesLeft(current, nowMs)}`} />

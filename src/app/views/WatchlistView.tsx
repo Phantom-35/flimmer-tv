@@ -20,12 +20,13 @@ function Item({ w, nowMs }: { w: WatchItem; nowMs: number }) {
         <ChannelBadge channel={ch} size="sm" />
         <span class="line-body">
           <span class="line-title">{w.t}</span>
-          <span class="line-meta">
+          <span class="line-meta meta">
             <span>
-              {dayLabel(tvDayOf(w.s * 1000), today.value)}, {formatTime(w.s * 1000, h12)} · {ch?.name}
+              {dayLabel(tvDayOf(w.s * 1000), today.value)}, {formatTime(w.s * 1000, h12)}
             </span>
+            <span>{ch?.name}</span>
             <GenreTag g={w.g} />
-            {running ? <span class="tag tag-live">Läuft</span> : null}
+            {running ? <span class="flag flag-live">Läuft</span> : null}
           </span>
           {w.ep || w.st ? <span class="line-sub">{[w.ep, w.st].filter(Boolean).join(' · ')}</span> : null}
         </span>

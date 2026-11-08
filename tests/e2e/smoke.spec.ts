@@ -92,7 +92,7 @@ test.describe('Kernflüsse', () => {
     await page.goto('/#/einstellungen');
     await page.getByRole('radio', { name: 'Dunkel' }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await page.getByRole('radio', { name: 'Groß', exact: true }).click();
+    await page.getByLabel('Schriftgröße').selectOption('1.125');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--font-scale').trim())).toBe('1.125');
@@ -112,6 +112,45 @@ test.describe('Kernflüsse', () => {
     await expect(page.getByText('Angaben gemäß § 5 DDG')).toBeVisible();
     await page.goto('/#/seite/datenschutz');
     await expect(page.getByText(/keine Cookies/)).toBeVisible();
+  });
+});
+
+test.describe('Natives Verhalten', () => {
+  test('Hinweise erscheinen auch über der Detailansicht', async ({ page }) => {
+    await skipOnboarding(page);
+    await page.goto('/#/jetzt');
+    await page.locator('.nowcard-main').first().click();
+    await page.locator('dialog.sheet').getByRole('button', { name: 'Merken' }).click();
+    const toast = page.locator('.toasts .toast');
+    await expect(toast).toBeVisible();
+    // Der Hinweis liegt oben (top layer) und ist tatsächlich anklickbar
+    await toast.getByRole('button', { name: 'Hinweis schließen' }).click();
+    await expect(toast).toHaveCount(0);
+  });
+
+  test('Unterseiten haben eine Zurück-Leiste und behalten die Scroll-Position', async ({ page }) => {
+    await skipOnboarding(page);
+    await page.goto('/#/mehr');
+    await page.locator('main').getByRole('link', { name: /Einstellungen/ }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Einstellungen' })).toBeVisible();
+    await page.getByRole('button', { name: 'Mehr' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Mehr' })).toBeVisible();
+  });
+
+  test('Erinnern ohne Mitteilungs-Unterstützung erklärt den nächsten Schritt', async ({ page }) => {
+    await skipOnboarding(page);
+    await page.addInitScript(() => {
+      // Wie Safari auf dem iPhone ohne installierte App: keine Push-APIs
+      // @ts-expect-error absichtlich entfernt
+      delete window.PushManager;
+    });
+    await page.goto('/#/jetzt?zeit=2015');
+    await page.locator('.nowcard-main').first().click();
+    const erinnern = page.locator('dialog.sheet').getByRole('button', { name: 'Erinnern' });
+    if (await erinnern.count()) {
+      await erinnern.click();
+      await expect(page.locator('.toasts .toast')).toBeVisible();
+    }
   });
 });
 

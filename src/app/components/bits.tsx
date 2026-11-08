@@ -1,20 +1,30 @@
 import type { ComponentChildren } from 'preact';
+import { useState } from 'preact/hooks';
+import { logoUrl } from '../../shared/logos';
 import { GENRE_LABEL } from '../../shared/genres';
 import { formatTime, progress } from '../../shared/time';
 import type { Channel, GenreKey, Programme } from '../../shared/types';
 import { settings } from '../store/settings';
 import { Icon, type IconName } from './Icon';
 
-/** Sender-Monogramm statt Logo (Markenrecht, siehe docs/DECISIONS.md). */
+/**
+ * Sender-Kürzel; auf Wunsch (Einstellung „Senderlogos“) das Logo von Wikimedia Commons.
+ * Fehlt ein Logo oder lädt es nicht, bleibt das Kürzel.
+ */
 export function ChannelBadge({ channel, size = 'md' }: { channel: Channel | undefined; size?: 'sm' | 'md' | 'lg' }) {
+  const [failed, setFailed] = useState(false);
   if (!channel) return <span class={`badge badge-${size}`} aria-hidden="true" />;
+  const logo = settings.value.logos && !failed ? logoUrl(channel.id, size === 'lg' ? 160 : 96) : undefined;
+  if (logo) {
+    return (
+      <span class={`badge badge-${size} badge-logo`} aria-hidden="true">
+        <img src={logo} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onError={() => setFailed(true)} />
+      </span>
+    );
+  }
   const len = channel.short.length;
   return (
-    <span
-      class={`badge badge-${size}${len >= 4 ? ' badge-long' : ''}`}
-      style={{ '--hue': String(channel.hue) }}
-      aria-hidden="true"
-    >
+    <span class={`badge badge-${size}${len >= 4 ? ' badge-long' : ''}`} aria-hidden="true">
       {channel.short}
     </span>
   );

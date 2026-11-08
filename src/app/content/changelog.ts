@@ -1,6 +1,18 @@
 /** Sichtbarer Changelog in "Über Flimmer". Neueste Version oben. */
 export const CHANGELOG: { version: string; date: string; items: string[] }[] = [
   {
+    version: '1.2.0',
+    date: '2026-11-08',
+    items: [
+      'Echte Mitteilungen: Erinnerungen kommen auch bei geschlossener App (iPhone: nach „Zum Home-Bildschirm“)',
+      'Flüssige Seitenwechsel, Zurück-Leiste und Wisch-Geste vom linken Rand',
+      'Detailansicht per Wischen nach unten schließen',
+      'Hinweise sind jetzt auch über der Detailansicht sichtbar',
+      'Einstellungen als übersichtliche Liste, Scroll-Position bleibt beim Zurückgehen erhalten',
+      'Optional: Senderlogos (Wikimedia Commons)',
+    ],
+  },
+  {
     version: '1.1.0',
     date: '2026-11-08',
     items: [

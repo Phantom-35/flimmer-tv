@@ -13,7 +13,7 @@ let nextId = 1;
 
 export function showToast(text: string, opts: { action?: Toast['action']; duration?: number } = {}): number {
   const id = nextId++;
-  const toast: Toast = { id, text, duration: opts.duration ?? 4000, ...(opts.action ? { action: opts.action } : {}) };
+  const toast: Toast = { id, text, duration: opts.duration ?? 3200, ...(opts.action ? { action: opts.action } : {}) };
   toasts.value = [...toasts.value.filter((t) => t.text !== text), toast];
   if (toast.duration) setTimeout(() => dismissToast(id), toast.duration);
   return id;
@@ -37,6 +37,8 @@ export function announce(text: string): void {
 }
 
 export const shortcutsOpen = signal(false);
+/** Detailansicht offen (Hinweise werden dann im Dialog angezeigt). */
+export const sheetOpen = signal(false);
 export const onboardingOpen = signal(false);
 
 /** Gespeichertes beforeinstallprompt-Event (Chrome/Edge/Android). */

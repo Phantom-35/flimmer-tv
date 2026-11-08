@@ -45,8 +45,7 @@ export function InstallCard() {
         <div>
           <strong>Auf den Home-Bildschirm</strong>
           <p class="muted small">
-            In Safari auf „Teilen“ <Icon name="share" size={14} /> tippen und „Zum Home-Bildschirm“ wählen. Danach funktionieren
-            auch Benachrichtigungen.
+            In Safari unten auf Teilen tippen, dann „Zum Home-Bildschirm“. Danach startet Flimmer wie eine App – mit Mitteilungen.
           </p>
         </div>
       </div>
@@ -86,7 +85,7 @@ export function MoreView() {
           </li>
         </ul>
       </nav>
-      <p class="muted small center">Flimmer {__APP_VERSION__} · ohne Werbung, ohne Tracking, ohne Konto</p>
+      <p class="muted small center">Flimmer {__APP_VERSION__}</p>
     </div>
   );
 }

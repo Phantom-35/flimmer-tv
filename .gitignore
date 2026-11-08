@@ -13,3 +13,4 @@ Thumbs.db
 .wrangler/
 lighthouse/
 .claude/
+.dev.vars

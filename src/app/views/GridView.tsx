@@ -30,6 +30,7 @@ function useWide(): boolean {
 }
 
 function Row({
+  day,
   ch,
   progs,
   start,
@@ -41,6 +42,7 @@ function Row({
   win,
 }: {
   win: [number, number];
+  day: string;
   ch: Channel;
   progs: Programme[];
   start: number;
@@ -55,7 +57,7 @@ function Row({
   return (
     <div class="grid-row" role="row" aria-label={ch.name}>
       <div class="grid-ch" role="rowheader">
-        <a class="grid-ch-link" href={`#/sender/${ch.id}`} title={`Tagesprogramm ${ch.name}`} aria-label={`${ch.name}, Tagesprogramm`}>
+        <a class="grid-ch-link" href={`#/sender/${ch.id}/${day}`} title={`Tagesprogramm ${ch.name}`} aria-label={`${ch.name}, Tagesprogramm`}>
           <ChannelBadge channel={ch} size="sm" />
           <span class="grid-chname">{ch.name}</span>
         </a>
@@ -253,7 +255,9 @@ export function GridView() {
 
   return (
     <div class="view view-grid">
-      <PageHeader title="Programm" sub={dayLabel(day, t, true)} />
+      <div class="grid-head">
+        <PageHeader title="Programm" sub={dayLabel(day, t, true)} />
+      </div>
       <div class="toolbar toolbar-days">
         <DayPicker value={day} onChange={(d) => navigate(`/programm/${d}${r.query.toString() ? `?${r.query}` : ''}`, true)} />
       </div>
@@ -266,6 +270,8 @@ export function GridView() {
         >
           <Icon name="clock" size={16} /> Jetzt
         </button>
+        <ScopeFilter value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
+        <GenreFilter value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
         {JUMPS.map((j) => (
           <button type="button" key={j.label} class="btn btn-ghost btn-small" onClick={() => scrollToTime(tvDayTime(day, j.h, j.m))}>
             {j.label}
@@ -290,10 +296,6 @@ export function GridView() {
         >
           <Icon name="zoomIn" size={20} />
         </button>
-      </div>
-      <div class="toolbar filters">
-        <ScopeFilter value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
-        <GenreFilter value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
       </div>
       {!loaded ? (
         dayFailed(day) ? (
@@ -341,6 +343,7 @@ export function GridView() {
               {channels.map((ch, i) => (
                 <Row
                   key={ch.id}
+                  day={day}
                   ch={ch}
                   progs={file?.p[ch.id] ?? []}
                   start={start}

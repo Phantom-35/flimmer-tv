@@ -20,6 +20,10 @@ export interface Settings {
   searchDescriptions: boolean;
   /** Install-Hinweis ausgeblendet. */
   installDismissed: boolean;
+  /** Echte Push-Benachrichtigungen (über den Server) aktiv. */
+  pushEnabled: boolean;
+  /** Senderlogos von Wikimedia Commons laden (opt-in). */
+  logos: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -32,6 +36,8 @@ export const DEFAULT_SETTINGS: Settings = {
   gridZoom: 1,
   searchDescriptions: false,
   installDismissed: false,
+  pushEnabled: false,
+  logos: false,
 };
 
 export const settings = persistedSignal<Settings>('settings', DEFAULT_SETTINGS, (v) => ({ ...DEFAULT_SETTINGS, ...v }));

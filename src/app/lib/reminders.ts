@@ -37,7 +37,8 @@ async function notify(item: WatchItem): Promise<void> {
   const when = startsIn > 0 ? `in ${startsIn} Min.` : 'jetzt';
   const body = `${formatTime(item.s * 1000, settings.value.h12)} · ${ch} – beginnt ${when}`;
   showToast(`Erinnerung: ${item.t} (${ch}) beginnt ${when}`, { duration: 10000 });
-  if (notificationPermission() !== 'granted') return;
+  // Mit aktivem Server-Push kommt die Mitteilung ohnehin – nicht doppelt anzeigen.
+  if (settings.value.pushEnabled || notificationPermission() !== 'granted') return;
   const options: NotificationOptions = {
     body,
     tag: item.id,

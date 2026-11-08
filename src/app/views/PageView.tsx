@@ -92,7 +92,11 @@ function Datenschutz() {
   return (
     <>
       <PlaceholderWarning />
-      <p class="lead">Kurz gesagt: Flimmer setzt keine Cookies, nutzt kein Tracking, keine Analyse-Dienste, keine Werbung und braucht kein Konto. Deine Einstellungen und deine Merkliste bleiben auf deinem Gerät.</p>
+      <p class="lead">
+        Kurz gesagt: Flimmer setzt keine Cookies, nutzt kein Tracking, keine Analyse-Dienste, keine Werbung und braucht kein Konto. Deine
+        Einstellungen und deine Merkliste bleiben auf deinem Gerät. Nur wenn du Mitteilungen einschaltest, speichert der Server die dafür nötigen
+        Erinnerungszeiten.
+      </p>
 
       <h2>1. Verantwortlicher</h2>
       <Address />
@@ -127,33 +131,57 @@ function Datenschutz() {
         jederzeit unter <a href="#/einstellungen">Einstellungen → Alle Daten löschen</a> oder über die Browser-Einstellungen entfernen.
       </p>
 
-      <h2>4. Benachrichtigungen, Kalender und Teilen</h2>
+      <h2>4. Mitteilungen (Push)</h2>
       <p>
-        Erinnerungen werden lokal auf deinem Gerät ausgelöst; es gibt keinen Push-Server und keine Übermittlung an Dritte. Die Erlaubnis für
-        Benachrichtigungen erteilst und widerrufst du in deinem Browser. Kalenderdateien (.ics) werden auf deinem Gerät erzeugt. Beim Teilen
-        übergibt Flimmer Titel, Sendezeit und Link an die Teilen-Funktion deines Betriebssystems; was dann geschieht, bestimmst du.
+        Nur wenn du unter Einstellungen „Mitteilungen“ einschaltest bzw. bei einer Sendung „Erinnern“ wählst und dein Gerät die Erlaubnis erteilt,
+        speichert der Server von Flimmer (Cloudflare, siehe Abschnitt 2): eine zufällige Geräte-Kennung, die technische Push-Adresse deines
+        Browsers mit den zugehörigen Schlüsseln sowie für jede Erinnerung Zeitpunkt, Titel, Sender und Sendezeit. Namen, E-Mail-Adressen oder
+        IP-Adressen werden dabei nicht gespeichert.
+      </p>
+      <p>
+        Zugestellt wird die Mitteilung über den Push-Dienst deines Browsers bzw. Betriebssystems (z. B. Apple, Google oder Mozilla). Der Inhalt
+        ist dabei Ende-zu-Ende verschlüsselt; der Push-Dienst kann ihn nicht lesen.
+      </p>
+      <p>
+        Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit widerrufen: Mitteilungen in
+        den Einstellungen ausschalten (dann löscht der Server sofort alle Daten deines Geräts) oder in den Mitteilungs-Einstellungen deines Geräts.
+        Gesendete Erinnerungen werden sofort entfernt. Ungültig gewordene Push-Adressen löscht der Server automatisch, ebenso alle Daten eines
+        Geräts, das sich 60 Tage lang nicht gemeldet hat.
       </p>
 
-      <h2>5. Keine externen Inhalte</h2>
+      <h2>5. Kalender und Teilen</h2>
       <p>
-        Flimmer lädt keine Schriftarten, Skripte, Bilder oder sonstigen Inhalte von Drittanbietern. Alle Dateien kommen vom oben genannten Hoster.
-        Links zu externen Seiten werden erst beim Anklicken aufgerufen.
+        Kalenderdateien (.ics) werden auf deinem Gerät erzeugt. Beim Teilen übergibt Flimmer Titel, Sendezeit und Link an die Teilen-Funktion deines
+        Betriebssystems; was dann geschieht, bestimmst du.
       </p>
 
-      <h2>6. Kontakt per E-Mail</h2>
+      <h2>6. Inhalte Dritter: Senderlogos (optional)</h2>
+      <p>
+        Standardmäßig lädt Flimmer keine Schriftarten, Skripte, Bilder oder sonstigen Inhalte von Drittanbietern. Nur wenn du in den Einstellungen
+        „Senderlogos“ einschaltest, lädt dein Gerät die Logos direkt von Wikimedia Commons (Wikimedia Foundation, Inc., San Francisco, USA).
+        Dabei erhält die Wikimedia Foundation deine IP-Adresse und übliche technische Angaben deines Browsers. Rechtsgrundlage ist deine Einwilligung
+        durch das Einschalten (Art. 6 Abs. 1 lit. a DSGVO), die du durch Ausschalten jederzeit widerrufen kannst. Mehr dazu:{' '}
+        <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy/de" target="_blank" rel="noopener noreferrer">
+          Datenschutzrichtlinie der Wikimedia Foundation
+        </a>
+        . Links zu externen Seiten werden erst beim Anklicken aufgerufen.
+      </p>
+
+      <h2>7. Kontakt per E-Mail</h2>
       <p>
         Wenn du eine E-Mail schreibst, werden deine Angaben (E-Mail-Adresse, Inhalt) zur Bearbeitung deiner Anfrage verarbeitet (Art. 6 Abs. 1 lit. b
         bzw. f DSGVO) und gelöscht, sobald sie nicht mehr erforderlich sind.
       </p>
 
-      <h2>7. Deine Rechte</h2>
+      <h2>8. Deine Rechte</h2>
       <p>Du hast jederzeit das Recht auf</p>
       <ul class="plain">
         <li>Auskunft über deine gespeicherten Daten (Art. 15 DSGVO),</li>
         <li>Berichtigung (Art. 16 DSGVO) und Löschung (Art. 17 DSGVO),</li>
         <li>Einschränkung der Verarbeitung (Art. 18 DSGVO),</li>
         <li>Datenübertragbarkeit (Art. 20 DSGVO),</li>
-        <li>Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21 DSGVO).</li>
+        <li>Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21 DSGVO),</li>
+        <li>Widerruf einer Einwilligung mit Wirkung für die Zukunft (Art. 7 Abs. 3 DSGVO).</li>
       </ul>
       <p>
         Eine kurze Nachricht an {op.email} genügt. Da Flimmer ohne Konto auskommt und deine Einstellungen nur auf deinem Gerät liegen, speichere ich
@@ -167,7 +195,7 @@ function Datenschutz() {
         .
       </p>
 
-      <h2>8. Änderungen</h2>
+      <h2>9. Änderungen</h2>
       <p>Wenn sich die App oder die Rechtslage ändert, passe ich diese Erklärung an. Es gilt die jeweils hier veröffentlichte Fassung.</p>
       <p class="muted small">Stand: November 2026</p>
     </>
@@ -204,8 +232,9 @@ function Quellen() {
       </p>
       <h2>Senderlogos und Bilder</h2>
       <p>
-        Flimmer zeigt bewusst keine Senderlogos und keine Sendungsbilder, weil deren Nutzung marken- und urheberrechtlich nicht eindeutig erlaubt ist.
-        Stattdessen gibt es neutrale Kürzel. Senderbezeichnungen dienen nur der Identifikation.
+        Standardmäßig zeigt Flimmer neutrale Kürzel statt Senderlogos und keine Sendungsbilder. Wer möchte, kann in den Einstellungen Senderlogos
+        einschalten: Sie werden dann direkt von Wikimedia Commons geladen und nicht von Flimmer verbreitet. Die Logos sind Marken der jeweiligen
+        Sender und werden nur zur Identifikation angezeigt; Lizenzangaben stehen auf der jeweiligen Commons-Dateiseite.
       </p>
       <h2>Open-Source-Software</h2>
       <p>In der App enthalten (jeweils MIT-Lizenz):</p>
@@ -286,9 +315,9 @@ function Hilfe() {
         Die Reihenfolge änderst du per Ziehen am Griff oder mit den Pfeil-Buttons.
       </Faq>
       <Faq q="Wie funktionieren Erinnerungen?">
-        Tippe in einer Sendung auf „Erinnern“. Solange Flimmer geöffnet ist oder im Hintergrund läuft, bekommst du eine Benachrichtigung. Web-Apps
-        können ohne eigenen Server nicht benachrichtigen, wenn sie ganz geschlossen sind – daher gibt es den Kalender-Export: Der Termin landet mit Alarm
-        in deinem Kalender und erinnert dich zuverlässig.
+        Tippe in einer Sendung auf „Erinnern“ und erlaube Mitteilungen. Du bekommst dann vor Beginn eine Mitteilung – auch wenn Flimmer geschlossen
+        ist. Auf dem iPhone/iPad geht das nur, wenn Flimmer über Safari → Teilen → „Zum Home-Bildschirm“ installiert ist (ab iOS 16.4). Den Vorlauf
+        stellst du in den Einstellungen ein; dort kannst du auch eine Test-Mitteilung schicken. Alternativ: „Kalender“ übernimmt den Termin mit Alarm.
       </Faq>
       <Faq q="Wie installiere ich Flimmer?">
         <strong>Android/Chrome/Edge:</strong> Menü → „App installieren“ bzw. der Button unter „Mehr“. <strong>iPhone/iPad:</strong> In Safari auf Teilen →
@@ -301,8 +330,9 @@ function Hilfe() {
         Tipps sind keine Werbung. Sie entstehen nach festen Regeln, z. B. Spielfilm mit guter IMDb-Wertung zur besten Sendezeit, Live-Sport oder
         Erstausstrahlung. Der Grund steht immer dabei.
       </Faq>
-      <Faq q="Warum gibt es keine Senderlogos?">
-        Logos sind Marken der Sender, deren Nutzung nicht eindeutig erlaubt ist. Die farbigen Kürzel sind eine saubere Alternative.
+      <Faq q="Kann ich Senderlogos sehen?">
+        Ja, unter Einstellungen → „Senderlogos“. Sie werden dann von Wikimedia Commons geladen (dabei sieht Wikimedia deine IP-Adresse). Für Sender
+        ohne freies Logo bleibt das Kürzel.
       </Faq>
       <Faq q="Was passiert mit meinen Daten?">
         Nichts – sie bleiben auf deinem Gerät. Details in der <a href="#/seite/datenschutz">Datenschutzerklärung</a>. Unter Einstellungen kannst du sie
@@ -368,9 +398,6 @@ export function PageView() {
   }
   return (
     <div class="view view-page">
-      <a class="backlink" href="#/mehr">
-        <Icon name="back" size={18} /> Mehr
-      </a>
       <PageHeader title={page.title} />
       <article class="prose">{page.render()}</article>
     </div>

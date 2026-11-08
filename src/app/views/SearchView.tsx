@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { dayLabel, tvDayOf } from '../../shared/time';
 import type { GenreKey, Programme } from '../../shared/types';
 import { EmptyState, PageHeader } from '../components/bits';
-import { GenreFilter } from '../components/Filters';
+import { GenreFilter, ScopeFilter } from '../components/Filters';
 import { Icon } from '../components/Icon';
 import { ProgrammeLine } from '../components/ProgrammeRow';
 import { prepareField, prepareQuery, scoreDocument } from '../lib/search';
@@ -150,19 +150,14 @@ export function SearchView() {
           </button>
         ) : null}
       </form>
-      <div class="toolbar toolbar-wrap">
-        <label class="switch">
-          <input type="checkbox" checked={onlyMine} onChange={(e) => setQuery({ sender: (e.target as HTMLInputElement).checked ? undefined : 'alle' })} />
-          <span>Nur meine Sender</span>
-        </label>
-        <label class="switch">
-          <input type="checkbox" checked={withDesc} onChange={(e) => updateSettings({ searchDescriptions: (e.target as HTMLInputElement).checked })} />
-          <span>Beschreibungen durchsuchen <small>(lädt ca. 3 MB)</small></span>
-        </label>
-      </div>
       <div class="toolbar filters">
+        <ScopeFilter value={onlyMine ? 'meine' : 'alle'} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
         <GenreFilter value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
       </div>
+      <label class="check">
+        <input type="checkbox" checked={withDesc} onChange={(e) => updateSettings({ searchDescriptions: (e.target as HTMLInputElement).checked })} />
+        <span>Auch in Beschreibungen suchen</span>
+      </label>
       {!qParam ? (
         <div class="search-suggest">
           <p class="muted">Vorschläge:</p>

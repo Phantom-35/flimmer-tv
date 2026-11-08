@@ -5,7 +5,7 @@ import { settings } from '../store/settings';
 import { showToast } from '../store/ui';
 import { addWatch, isWatched, removeWatch, setRemind, toWatchItem, watchlist, type WatchItem } from '../store/watchlist';
 import { buildIcs, downloadFile, safeFilename, type IcsEvent } from './ics';
-import { notificationPermission, requestNotificationPermission } from './reminders';
+import { enablePush, pushState } from './push';
 
 export function programmeUrl(id: string): string {
   return `${location.origin}/#/jetzt?d=${encodeURIComponent(id)}`;
@@ -79,7 +79,7 @@ export function toggleWatch(p: Programme, channelId: string): void {
   }
 }
 
-/** Erinnerung an/aus. Legt die Sendung bei Bedarf auf die Merkliste. */
+/** Erinnerung an/aus. Legt die Sendung bei Bedarf auf die Merkliste und schaltet Push ein. */
 export async function toggleReminder(p: Programme, channelId: string): Promise<void> {
   const existing = watchlist.value.find((w) => w.id === p.i);
   if (existing?.remind) {
@@ -88,18 +88,32 @@ export async function toggleReminder(p: Programme, channelId: string): Promise<v
     return;
   }
   if (p.s * 1000 <= Date.now()) {
-    showToast('Die Sendung hat schon begonnen');
+    showToast('Die Sendung läuft schon');
     return;
   }
   if (!existing) addWatch(toWatchItem(p, channelId, true));
   else setRemind(p.i, true);
-  const perm = notificationPermission() === 'default' ? await requestNotificationPermission() : notificationPermission();
   const lead = settings.value.reminderLead;
-  if (perm === 'granted') {
-    showToast(`Erinnerung ${lead} Min. vorher – solange Flimmer offen ist. Für sicher: Kalender.`, { duration: 6000 });
-  } else {
-    showToast(`Erinnerung in der App gesetzt. Ohne Benachrichtigungs­erlaubnis nur bei geöffneter App – nutze besser den Kalender.`, {
-      duration: 7000,
-    });
+  const leadText = lead ? `${lead} Min. vorher` : 'zum Beginn';
+  const state = pushState();
+  if (state === 'on') {
+    showToast(`Du wirst ${leadText} erinnert`);
+    return;
   }
+  if (state === 'off') {
+    // Erlaubnis direkt aus dem Tippen heraus anfragen (iOS verlangt das)
+    const result = await enablePush();
+    if (result === 'on') showToast(`Du wirst ${leadText} erinnert`);
+    else showToast('Ohne Erlaubnis für Mitteilungen kann Flimmer dich nicht erinnern. Tipp: Kalender', { duration: 6000 });
+    return;
+  }
+  if (state === 'needs-install') {
+    showToast('Für Erinnerungen Flimmer zum Home-Bildschirm hinzufügen (Teilen → Zum Home-Bildschirm)', { duration: 7000 });
+    return;
+  }
+  if (state === 'denied') {
+    showToast('Mitteilungen sind für Flimmer blockiert – in den Geräte-Einstellungen erlauben', { duration: 6000 });
+    return;
+  }
+  showToast('Dieser Browser unterstützt keine Mitteilungen. Tipp: Kalender', { duration: 6000 });
 }

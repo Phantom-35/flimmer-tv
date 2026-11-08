@@ -9,6 +9,8 @@ import { settings } from '../store/settings';
 import { watchlist } from '../store/watchlist';
 import { ChannelBadge, Flags, GenreTag, ProgressBar, minutesLeft } from './bits';
 import { Icon } from './Icon';
+import { Toasts } from './Shell';
+import { sheetOpen } from '../store/ui';
 
 function fskLabel(fsk: number): string {
   return fsk === 0 ? 'FSK 0 / ohne Altersbeschränkung' : `ab ${fsk} Jahren`;
@@ -29,10 +31,71 @@ export function DetailSheet() {
     const dlg = ref.current;
     if (!dlg) return;
     if (id && !dlg.open) {
+      dlg.classList.remove('closing');
+      dlg.style.transform = '';
       dlg.showModal();
-      dlg.querySelector<HTMLElement>('.sheet-close')?.focus();
-    } else if (!id && dlg.open) dlg.close();
+      sheetOpen.value = true;
+      dlg.querySelector<HTMLElement>('.sheet-close')?.focus({ preventScroll: true });
+      dlg.querySelector('.sheet-inner')?.scrollTo(0, 0);
+    } else if (!id && dlg.open) {
+      // Schließen animieren, dann wirklich schließen
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        dlg.close();
+        sheetOpen.value = false;
+        return;
+      }
+      dlg.classList.add('closing');
+      const done = () => {
+        dlg.classList.remove('closing');
+        dlg.style.transform = '';
+        if (!route.value.query.get('d')) {
+          dlg.close();
+          sheetOpen.value = false;
+        }
+      };
+      setTimeout(done, 220);
+    }
   }, [id]);
+
+  // Nach unten wischen schließt die Detailansicht (wie ein iOS-Sheet).
+  const drag = useRef<{ y: number; t: number; active: boolean; dy: number } | null>(null);
+  const onTouchStart = (e: TouchEvent) => {
+    const inner = ref.current?.querySelector('.sheet-inner');
+    const t = e.touches[0];
+    if (!t || !inner || inner.scrollTop > 0) return;
+    drag.current = { y: t.clientY, t: performance.now(), active: false, dy: 0 };
+  };
+  const onTouchMove = (e: TouchEvent) => {
+    const d = drag.current;
+    const t = e.touches[0];
+    const dlg = ref.current;
+    if (!d || !t || !dlg) return;
+    d.dy = t.clientY - d.y;
+    if (!d.active) {
+      if (d.dy < 6) {
+        if (d.dy < -6) drag.current = null; // nach oben = scrollen
+        return;
+      }
+      d.active = true;
+    }
+    e.preventDefault();
+    dlg.style.transition = 'none';
+    dlg.style.transform = `translateY(${Math.max(0, d.dy)}px)`;
+  };
+  const onTouchEnd = () => {
+    const d = drag.current;
+    const dlg = ref.current;
+    drag.current = null;
+    if (!d?.active || !dlg) return;
+    const v = d.dy / Math.max(1, performance.now() - d.t);
+    dlg.style.transition = '';
+    if (d.dy > 120 || (d.dy > 40 && v > 0.6)) {
+      dlg.style.transform = `translateY(${d.dy}px)`;
+      closeDetail();
+    } else {
+      dlg.style.transform = '';
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -69,6 +132,7 @@ export function DetailSheet() {
       ref={ref}
       class="sheet"
       aria-labelledby="sheet-title"
+      onClose={() => (sheetOpen.value = false)}
       onCancel={(e) => {
         e.preventDefault();
         closeDetail();
@@ -76,9 +140,14 @@ export function DetailSheet() {
       onClick={(e) => {
         if (e.target === ref.current) closeDetail();
       }}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
     >
       <div class="sheet-inner">
         <div class="sheet-handle" aria-hidden="true" />
+        <Toasts inDialog />
         <button type="button" class="icon-btn sheet-close" aria-label="Schließen" onClick={() => closeDetail()}>
           <Icon name="close" size={22} />
         </button>
@@ -186,8 +255,12 @@ export function DetailSheet() {
                   <dd>{fskLabel(p.fsk)}</dd>
                 </>
               ) : null}
-              <dt>Wiederholung</dt>
-              <dd>{p.r ? 'Ja' : p.n ? 'Nein, Erstausstrahlung' : 'Keine Angabe'}</dd>
+              {p.r || p.n ? (
+                <>
+                  <dt>Wiederholung</dt>
+                  <dd>{p.r ? 'Ja' : 'Nein, Erstausstrahlung'}</dd>
+                </>
+              ) : null}
               {details?.dir ? (
                 <>
                   <dt>Regie</dt>

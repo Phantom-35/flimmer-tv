@@ -3,7 +3,7 @@ import { berlinDate, formatTime } from '../../shared/time';
 import { routeName } from '../router';
 import { index, indexState, loadIndex, now } from '../store/data';
 import { settings } from '../store/settings';
-import { announcement, dismissToast, online, shortcutsOpen, toasts } from '../store/ui';
+import { announcement, dismissToast, online, sheetOpen, shortcutsOpen, toasts } from '../store/ui';
 import { watchlist } from '../store/watchlist';
 import { Icon, type IconName } from './Icon';
 
@@ -105,10 +105,16 @@ export function StatusBanner() {
   return null;
 }
 
-export function Toasts() {
+/**
+ * Hinweise (immer nur der neueste). Ein modaler Dialog macht alles außerhalb inaktiv –
+ * deshalb zeigt die offene Detailansicht die Hinweise selbst an (inDialog).
+ */
+export function Toasts({ inDialog = false }: { inDialog?: boolean }) {
+  if (sheetOpen.value !== inDialog) return null;
+  const list = toasts.value.slice(-1);
   return (
-    <div class="toasts" role="status" aria-live="polite">
-      {toasts.value.map((t) => (
+    <div class={`toasts${inDialog ? ' toasts-in-dialog' : ''}`} role="status" aria-live="polite">
+      {list.map((t) => (
         <div class="toast" key={t.id}>
           <span>{t.text}</span>
           {t.action ? (

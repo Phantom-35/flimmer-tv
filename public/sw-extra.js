@@ -1,4 +1,23 @@
-/* Ergänzung zum generierten Service Worker: Klick auf eine Erinnerung öffnet die App. */
+/* Ergänzung zum generierten Service Worker: Push-Nachrichten anzeigen, Klick öffnet die App. */
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { title: 'Flimmer', body: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'Flimmer';
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || '',
+      tag: data.tag || undefined,
+      icon: '/icons/icon-192.png',
+      badge: '/icons/badge-96.png',
+      data: { url: data.url || '/' },
+    }),
+  );
+});
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const url = (event.notification.data && event.notification.data.url) || '/';

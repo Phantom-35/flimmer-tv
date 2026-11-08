@@ -24,7 +24,8 @@ function securityHeaders(): Plugin {
         "default-src 'self'",
         `script-src 'self' ${hashes.join(' ')}`,
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob:",
+        // Senderlogos nur, wenn der Nutzer sie einschaltet (Wikimedia Commons)
+        "img-src 'self' data: blob: https://commons.wikimedia.org https://upload.wikimedia.org",
         "connect-src 'self'",
         "manifest-src 'self'",
         "worker-src 'self'",
@@ -125,7 +126,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
         globIgnores: ['**/data/**', 'screens/**'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/data\//],
+        navigateFallbackDenylist: [/^\/data\//, /^\/api\//],
         cleanupOutdatedCaches: true,
         // Erstinstallation: Seite sofort übernehmen, damit schon der erste Besuch offline-fähig wird.
         // Updates warten weiterhin auf den Klick auf "Aktualisieren" (kein skipWaiting).
@@ -150,6 +151,16 @@ export default defineConfig({
               matchOptions: { ignoreVary: true },
               networkTimeoutSeconds: 4,
               expiration: { maxEntries: 30, maxAgeSeconds: 16 * 24 * 3600 },
+            },
+          },
+          {
+            // Senderlogos (opt-in) für offline vorhalten
+            urlPattern: ({ url }) => url.hostname === 'upload.wikimedia.org' || url.hostname === 'commons.wikimedia.org',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'flimmer-logos',
+              cacheableResponse: { statuses: [0, 200] },
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 24 * 3600 },
             },
           },
           {

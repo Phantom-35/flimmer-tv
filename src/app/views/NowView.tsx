@@ -135,7 +135,7 @@ export function NowView() {
         <ScopeFilter value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
         <GenreFilter value={genre} counts={loaded ? counts : undefined} onChange={(g) => setQuery({ genre: g || undefined })} />
       </div>
-      {(mode === 'jetzt' || mode === '2015') && loaded && !genre ? <TipsStrip channels={channels} day={day} nowMs={nowMs} /> : null}
+      {mode === 'jetzt' && loaded && !genre ? <TipsStrip channels={channels} day={day} nowMs={nowMs} /> : null}
       {!loaded && !failed ? (
         <Skeleton rows={8} variant="card" />
       ) : failed && !loaded ? (

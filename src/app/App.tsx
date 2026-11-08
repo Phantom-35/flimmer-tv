@@ -4,7 +4,8 @@ import { DetailSheet } from './components/DetailSheet';
 import { Onboarding } from './components/Onboarding';
 import { FatalError, LiveRegion, Nav, ShortcutsDialog, StatusBanner, Toasts } from './components/Shell';
 import { Skeleton } from './components/bits';
-import { navigate, route, routeName } from './router';
+import { goBack, lastDirection, navigate, route, routeName, skipNextTransition } from './router';
+import { Icon } from './components/Icon';
 import { addDays, tvDayOf } from '../shared/time';
 import { index, indexState, loadIndex } from './store/data';
 import { settings } from './store/settings';
@@ -67,10 +68,7 @@ function useUpdatePrompt() {
     }
   }, [needRefresh]);
   useEffect(() => {
-    if (offlineReady) {
-      showToast('Flimmer funktioniert jetzt auch offline.');
-      setOfflineReady(false);
-    }
+    if (offlineReady) setOfflineReady(false);
   }, [offlineReady]);
 }
 
@@ -93,6 +91,103 @@ function useGlobalShortcuts() {
     };
     window.addEventListener('keydown', fn);
     return () => window.removeEventListener('keydown', fn);
+  }, []);
+}
+
+/** Unterseiten und ihre übergeordnete Seite (für die Zurück-Leiste). */
+const PARENT: Record<string, { href: string; label: string }> = {
+  sender: { href: '/programm', label: 'Programm' },
+  einstellungen: { href: '/mehr', label: 'Mehr' },
+  'sender-verwalten': { href: '/mehr', label: 'Zurück' },
+  seite: { href: '/mehr', label: 'Mehr' },
+};
+
+function BackBar({ to }: { to: { href: string; label: string } }) {
+  return (
+    <div class="backbar">
+      <button type="button" class="backbar-btn" onClick={() => goBack(to.href)}>
+        <Icon name="back" size={22} />
+        <span>{to.label}</span>
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Wisch-Geste vom linken Bildschirmrand zurück (wie bei iOS) – nur auf Unterseiten
+ * und nur auf Touch-Geräten. Die Seite folgt dem Finger.
+ */
+function useEdgeSwipeBack(mainRef: { current: HTMLElement | null }) {
+  useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+    let startT = 0;
+    let active = false;
+    let decided = false;
+    const el = () => mainRef.current;
+    const reset = () => {
+      const m = el();
+      if (!m) return;
+      m.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      m.style.transform = '';
+      setTimeout(() => (m.style.transition = ''), 260);
+    };
+    const onStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t || e.touches.length > 1 || t.clientX > 24 || !PARENT[routeName.value] || document.querySelector('dialog[open]')) return;
+      startX = t.clientX;
+      startY = t.clientY;
+      startT = performance.now();
+      active = true;
+      decided = false;
+    };
+    const onMove = (e: TouchEvent) => {
+      if (!active) return;
+      const t = e.touches[0]!;
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if (!decided) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        decided = true;
+        if (Math.abs(dy) > Math.abs(dx) || dx < 0) {
+          active = false;
+          return;
+        }
+      }
+      e.preventDefault();
+      const m = el();
+      if (m) m.style.transform = `translateX(${Math.max(0, dx)}px)`;
+    };
+    const onEnd = (e: TouchEvent) => {
+      if (!active) return;
+      active = false;
+      const t = e.changedTouches[0];
+      const dx = t ? t.clientX - startX : 0;
+      const v = dx / Math.max(1, performance.now() - startT);
+      const m = el();
+      if (m && (dx > window.innerWidth * 0.35 || (dx > 40 && v > 0.5))) {
+        m.style.transition = 'transform 0.2s ease-out';
+        m.style.transform = 'translateX(100%)';
+        skipNextTransition();
+        setTimeout(() => {
+          goBack(PARENT[routeName.value]?.href ?? '/jetzt');
+          requestAnimationFrame(() => {
+            m.style.transition = '';
+            m.style.transform = '';
+          });
+        }, 200);
+      } else reset();
+    };
+    document.addEventListener('touchstart', onStart, { passive: true });
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', reset);
+    return () => {
+      document.removeEventListener('touchstart', onStart);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+      document.removeEventListener('touchcancel', reset);
+    };
   }, []);
 }
 
@@ -121,9 +216,11 @@ export function App() {
       first.current = false;
       return;
     }
-    window.scrollTo(0, 0);
+    // Scroll-Position setzt der Router (oben bzw. wiederhergestellt beim Zurück).
     requestAnimationFrame(() => mainRef.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus({ preventScroll: true }));
   }, [path]);
+
+  useEdgeSwipeBack(mainRef);
 
   const View = VIEWS[name] ?? NowView;
   const ready = indexState.value === 'ready' && index.value;
@@ -136,7 +233,13 @@ export function App() {
       <Nav />
       <main id="main" ref={mainRef} tabIndex={-1}>
         <StatusBanner />
-        {ready ? <View /> : indexState.value === 'error' ? <FatalError /> : <div class="view"><div class="page-header"><span class="sk sk-line" style={{ width: '40%', height: '2rem' }} /></div><Skeleton rows={9} variant="card" /></div>}
+        {ready ? (
+          <div class={`page page-${lastDirection.value}`} key={path}>
+            {PARENT[name] ? <BackBar to={PARENT[name]!} /> : null}
+            <View />
+          </div>
+        ) : null}
+        {ready ? null : indexState.value === 'error' ? <FatalError /> : <div class="view"><div class="page-header"><span class="sk sk-line" style={{ width: '40%', height: '2rem' }} /></div><Skeleton rows={9} variant="card" /></div>}
       </main>
       {ready ? <DetailSheet /> : null}
       {ready ? <Onboarding /> : null}

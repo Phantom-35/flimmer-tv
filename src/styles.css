@@ -355,7 +355,7 @@ main { outline: none; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 1.5rem
 .nowcard-next time { font-weight: 600; color: var(--text); }
 .nowcard-next-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
 .nowcard-empty { grid-area: main; color: var(--muted); margin: 0.5rem 0; }
-.nowcard-main:hover .nowcard-title, .nowcard-next:hover .nowcard-next-title { text-decoration: underline; text-decoration-thickness: 1px; }
+@media (hover: hover) { .nowcard-main:hover .nowcard-title, .nowcard-next:hover .nowcard-next-title { text-decoration: underline; text-decoration-thickness: 1px; } }
 
 /* ---------- Tipps ---------- */
 .tips { margin: 0 0 1.25rem; }
@@ -366,7 +366,7 @@ main { outline: none; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 1.5rem
 .tiprow-body { display: flex; flex-direction: column; min-width: 0; }
 .tiprow-title { font-weight: 600; }
 .tiprow-meta { font-size: 0.85rem; color: var(--muted); }
-.tiprow:hover .tiprow-title { text-decoration: underline; text-decoration-thickness: 1px; }
+@media (hover: hover) { .tiprow:hover .tiprow-title { text-decoration: underline; text-decoration-thickness: 1px; } }
 
 /* ---------- Listen ---------- */
 .lines { list-style: none; margin: 0; padding: 0; }
@@ -378,7 +378,7 @@ main { outline: none; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 1.5rem
   flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: 0.75rem; text-align: left;
   padding: 0.75rem 0.25rem; border: 0; background: none; cursor: pointer; border-radius: var(--radius-s);
 }
-.line-main:hover .line-title, .watch-main:hover .line-title { text-decoration: underline; text-decoration-thickness: 1px; }
+@media (hover: hover) { .line-main:hover .line-title, .watch-main:hover .line-title { text-decoration: underline; text-decoration-thickness: 1px; } }
 .line-time { flex: none; width: 3.4rem; font-weight: 750; font-size: 1rem; padding-top: 1px; display: flex; flex-direction: column; }
 .line-day { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
 .line-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
@@ -664,3 +664,103 @@ dialog::backdrop { background: rgb(10 8 4 / 55%); }
   .nav, .toasts, .toolbar, .icon-btn { display: none !important; }
   main { padding: 0; }
 }
+
+/* ==========================================================================
+   Natives Gefühl: Übergänge, Gesten, Zurück-Leiste, gruppierte Listen
+   ========================================================================== */
+html { -webkit-tap-highlight-color: transparent; }
+button, a, select, label { touch-action: manipulation; }
+/* Druck-Feedback wie bei iOS */
+.nowcard-main:active, .nowcard-next:active, .tiprow:active, .line-main:active, .watch-main:active, .row-action:active, .menu a:active, .menu button:active, .cell:active {
+  opacity: 0.55; transition: opacity 0s;
+}
+.btn:active, .action:active, .icon-btn:active { opacity: 0.6; }
+
+/* Seitenwechsel: die neue Seite gleitet herein (vorwärts von rechts, zurück von links, Tabs blenden) */
+.page { animation-duration: 0.3s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); animation-fill-mode: both; }
+.page-forward { animation-name: page-in-right; }
+.page-back { animation-name: page-in-left; }
+.page-tab { animation-name: page-fade; animation-duration: 0.16s; }
+@keyframes page-in-right { from { transform: translateX(36%); opacity: 0; } }
+@keyframes page-in-left { from { transform: translateX(-18%); opacity: 0; } }
+@keyframes page-fade { from { opacity: 0; } }
+.view { animation: none; }
+
+/* Zurück-Leiste auf Unterseiten */
+.backbar { padding: calc(0.4rem + var(--safe-t)) 0.5rem 0; max-width: 1400px; margin: 0 auto; }
+.backbar + .view { padding-top: 0.25rem; }
+.backbar-btn {
+  display: inline-flex; align-items: center; gap: 0.1rem; min-height: 44px; padding: 0 0.6rem 0 0.2rem;
+  border: 0; background: none; color: var(--accent-strong); font-weight: 600; font-size: 1rem; cursor: pointer;
+}
+@media (min-width: 900px) { .backbar { padding: 1rem 1.5rem 0; } }
+
+/* Detailansicht: Schließen-Animation und Wisch-Geste */
+.sheet { transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.sheet.closing { animation: sheet-down 0.22s ease-in forwards; }
+.sheet.closing::backdrop { animation: fade-out 0.22s ease-in forwards; }
+.sheet[open]::backdrop { animation: fade-in-bd 0.26s ease-out; }
+@keyframes sheet-down { to { transform: translateY(105%); } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes fade-in-bd { from { opacity: 0; } }
+@media (min-width: 700px) { @keyframes sheet-down { to { transform: translateY(24px); opacity: 0; } } }
+
+/* Tipp-Hinweis in der 20:15-Liste */
+.nowcard-tip { font-size: 0.82rem; color: var(--accent-strong); }
+
+/* Programmraster: auf dem Handy kompakter Kopf (Tagesleiste zeigt den Tag) */
+@media (max-width: 899px) {
+  .grid-head .page-header { display: none; }
+  .view-grid { padding-top: calc(0.5rem + var(--safe-t)); }
+}
+.toolbar-jumps .select select { min-height: 36px; }
+
+/* Gruppierte Listen (Einstellungen) */
+.group-title { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 1.4rem 0.25rem 0.4rem; }
+.group { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 0.75rem; }
+.group-note { font-size: 0.85rem; color: var(--muted); margin: 0.25rem 0.25rem 0.75rem; }
+.row {
+  display: flex; align-items: center; gap: 0.8rem; width: 100%; min-height: 52px; padding: 0.6rem 1rem;
+  border: 0; background: none; color: var(--text); text-align: left; text-decoration: none; font: inherit; cursor: pointer;
+}
+.row + .row { border-top: 1px solid var(--line); }
+.row-label { flex: 1; font-weight: 500; }
+.row-text { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; }
+.row-sub { font-size: 0.85rem; color: var(--muted); }
+.row-select { position: relative; display: inline-flex; align-items: center; color: var(--muted); }
+.row-select select { appearance: none; -webkit-appearance: none; border: 0; background: none; font: inherit; color: var(--muted); text-align: right; padding: 0.4rem 1.4rem 0.4rem 0.4rem; cursor: pointer; max-width: 12rem; }
+.row-select .icon { position: absolute; right: 0; pointer-events: none; }
+.row-block { flex-direction: column; align-items: stretch; gap: 0.4rem; }
+.row-block .segmented { border-bottom: 0; }
+.row-action .icon:first-child { color: var(--muted); }
+.row-chevron { color: var(--muted); }
+.row-danger, .row-danger .icon:first-child { color: var(--danger); }
+.row-disabled { cursor: default; }
+.row-disabled .row-label { color: var(--muted); }
+.row-toggle .switch { min-height: 0; }
+@media (hover: hover) { .row-action:hover { background: var(--surface-2); } }
+
+/* Kleine Checkbox-Zeile (Suche) */
+.check { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 40px; font-size: 0.9rem; color: var(--muted); margin-bottom: 0.25rem; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* Sender verwalten: schlichte Liste */
+.view-manage .sortable { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0 0.25rem; margin: 0; }
+.view-manage .sort-item { background: none; }
+.view-manage .sort-item:last-child { border-bottom: 0; }
+.view-manage .chlist { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0 0.5rem 0 0.75rem; }
+.view-manage .chlist li:last-child { border-bottom: 0; }
+.view-manage .chgroup-title { margin: 1rem 0.25rem 0.4rem; }
+.view-manage .searchbox-small { margin-bottom: 0.25rem; }
+
+/* Senderlogos (optional, Wikimedia Commons) */
+.badge-logo { background: #fff; padding: 5px; }
+.badge-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Hinweise innerhalb der Detailansicht: unten über dem Sheet */
+.toasts-in-dialog { bottom: calc(1rem + var(--safe-b)); }
+@media (min-width: 900px) { .toasts-in-dialog { left: 50%; } }
+/* Breite Logos (z. B. „Das Erste“) brauchen mehr Platz als das quadratische Kürzel */
+.badge-logo.badge-md { width: 56px; }
+.badge-logo.badge-sm { width: 48px; }
+.badge-logo.badge-lg { width: 72px; }

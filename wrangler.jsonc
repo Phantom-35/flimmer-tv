@@ -1,16 +1,29 @@
-// Cloudflare Worker mit statischen Assets (kein eigener Worker-Code nötig).
+// Cloudflare Worker: statische Assets + kleine Push-API (worker/index.ts).
 // Deploy: `npm run data && npm run build && npx wrangler deploy`
 // – automatisch durch Cloudflare Workers Builds (bei Push) und den
 // GitHub-Workflow "Daten aktualisieren & veröffentlichen" (alle 6 h).
+// Geheimer VAPID-Schlüssel: Worker-Secret VAPID_PRIVATE_KEY (Workflow "Push einrichten").
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "flimmer-tv",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     // Hash-Routing: nur "/" wird gebraucht. Fehlende Dateien (z. B. Programmdaten)
     // sollen ehrlich 404 liefern statt index.html.
-    "not_found_handling": "none"
+    "not_found_handling": "none",
+    // Nur die API läuft durch den Worker-Code; alles andere direkt aus den Assets.
+    "run_worker_first": ["/api/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "REMINDERS", "class_name": "ReminderBox" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ReminderBox"] }],
+  "vars": {
+    "VAPID_PUBLIC_KEY": "BOkpomHq0TT8Hb15iGu_UAzMy1lEKLvyKw7c0iuPzuYuB0QIPTdecFB5x1c_CgD-jebdSpf-wDZBIRlUHFJyko0",
+    "VAPID_SUBJECT": "mailto:phandevstudios@gmx.de"
   },
   "observability": { "enabled": true }
 }

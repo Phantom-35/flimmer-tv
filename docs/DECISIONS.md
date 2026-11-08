@@ -75,7 +75,7 @@ Jede Entscheidung: **Was**, **Warum**, **Alternativen**. Stand: 08.11.2026.
 
 Normalisierung (Umlaute, Akzente), Präfix-/Teilworttreffer und Damerau-Levenshtein (Buchstabendreher). Keine Bibliothek nötig (Fuse.js o. ä. wäre +10 KB). Beschreibungen nur auf Wunsch, weil sie ~3 MB (gzip) für alle Tage bedeuten.
 
-## 8. Erinnerungen: ehrlich statt versprochen
+## 8. Erinnerungen (v1.0 – abgelöst durch Abschnitt 15)
 
 - Web-Apps können **ohne eigenen Push-Server** keine Benachrichtigung auslösen, wenn sie geschlossen sind. Die „Notification Triggers“-API wurde nie ausgeliefert. iOS erlaubt Web-Push nur für installierte PWAs und auch nur über einen Push-Server.
 - Ein Push-Server bräuchte Backend, Speicherung von Push-Abos (personenbezogen) und Zeitsteuerung → widerspricht „kein Server, keine Daten“.
@@ -104,3 +104,32 @@ Das Projekt wurde als Cloudflare **Worker mit statischen Assets** angelegt (Clou
 ## 13. Bekannte `npm audit`-Meldungen (akzeptiert)
 
 `npm audit` meldet moderate Schwachstellen in `deepmerge` und `glob` – beide nur transitiv über `workbox-build` (Build-Zeit von `vite-plugin-pwa`). Sie landen nicht im ausgelieferten Code und verarbeiten nur eigene Projektdateien. Der vorgeschlagene „Fix“ wäre ein Downgrade von `vite-plugin-pwa` auf 1.x. Entscheidung: nicht downgraden, bei neuer Workbox-Version aktualisieren.
+
+## 14. Senderlogos: optional, von Wikimedia Commons (v1.2)
+
+**Rechtslage (Recherche 08.11.2026, keine Rechtsberatung):**
+- *Markenrecht* greift nur bei Nutzung „im geschäftlichen Verkehr“ (§ 14 MarkenG). Eine rein private, nicht-kommerzielle Nutzung ist nicht erfasst; allerdings können auch kostenlose, öffentlich erreichbare Angebote als geschäftlich gelten.
+- *Urheberrecht:* Die meisten deutschen Senderlogos sind reine Text-/Formlogos unterhalb der Schöpfungshöhe und auf Wikimedia Commons als gemeinfrei („PD-textlogo“) gekennzeichnet. Verlässlich ist das nur, wo Commons es so führt.
+- Flimmer ist öffentlich erreichbar (workers.dev-Adresse) → nicht „rein privat“.
+
+**Entscheidung:** Logos sind eine **freiwillige Einstellung (Standard: aus)**. Eingeschaltet lädt das Gerät die Logos **direkt von Wikimedia Commons** (Flimmer hostet/verbreitet sie nicht). Übernommen wurden nur Dateien, die Commons als „Public domain“ führt (47 von 59 Sendern, ermittelt über Wikidata P154, aktuelles Logo, `scripts/fetch-logos.mjs`). CC-BY-SA-Dateien (Sat.1, ServusTV) und unpassende Treffer bleiben außen vor; dort bleibt das Kürzel. Datenschutz: Wikimedia sieht die IP – daher Einwilligung durch das Einschalten, Hinweis in der Datenschutzerklärung.
+
+**Alternative für mehr Sicherheit:** App hinter Cloudflare Access (kostenlos bis 50 Nutzer) wirklich privat machen – dann wäre auch eigenes Hosting der Logos vertretbar.
+
+## 15. Echte Push-Mitteilungen über den eigenen Worker (v1.2)
+
+**Entscheidung:** Web Push (VAPID, RFC 8291/8292) über den bestehenden Cloudflare-Worker. Je Gerät ein **Durable Object** (SQLite, im Free-Tarif enthalten), das Push-Abo und Erinnerungen speichert und sich per **Alarm** genau zur Erinnerungszeit weckt.
+
+**Warum so:**
+- Kein Cron-Polling (ein Minuten-Cron mit KV würde das KV-Free-Limit von 1.000 List-Operationen/Tag reißen), keine Datenbank-Einrichtung (D1), punktgenau (im lokalen Test 0 s Abweichung).
+- Eigene Implementierung der Verschlüsselung mit WebCrypto (~150 Zeilen, keine Abhängigkeit), byte-genau gegen den Testvektor aus RFC 8291 geprüft; lokaler Ende-zu-Ende-Test (`scripts/test-push-e2e.mjs`) mit Mock-Push-Dienst, der wie ein Browser entschlüsselt und die VAPID-Signatur prüft.
+- Datensparsam: zufällige Geräte-ID, Push-Adresse, Erinnerungen (Titel, Zeit, Sender) – keine Konten, keine IPs. Gesendete Erinnerungen werden gelöscht, ungültige Abos und 60 Tage inaktive Geräte automatisch entfernt. Rechtsgrundlage Einwilligung.
+- Schutz: nur bekannte Push-Dienste (Apple, Google, Mozilla, Microsoft) als Ziel, Größen-/Anzahllimits, Origin-Prüfung.
+
+**iOS:** Web Push nur für installierte Web-Apps (Home-Bildschirm, ab iOS 16.4) und nach Nutzeraktion. Die App erkennt das und erklärt den Weg, statt still zu scheitern.
+
+**Free-Tier-Verbrauch:** je Erinnerung 1 Alarm + 1 ausgehender Request; Durable Objects Free: 100.000 Requests/Tag, 5 GB Speicher – weit mehr als nötig.
+
+## 16. Seitenübergänge per CSS statt View-Transitions-API (v1.2)
+
+Die View-Transitions-API (Schieben alter + neuer Seite) brachte die WebKit-Engine im Test reproduzierbar zum Absturz (Überblenden nicht). Da iOS-Safari WebKit ist und das nicht auf echten Geräten überprüfbar war, animiert stattdessen nur die neue Seite per CSS (vorwärts von rechts, zurück von links, Tabs blenden). Dazu: Scroll-Position je Verlaufseintrag, Zurück-Leiste, Wisch-zurück vom linken Rand, Sheet per Wischen schließen.

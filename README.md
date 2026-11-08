@@ -39,7 +39,9 @@ Flimmer öffnet sich und zeigt sofort, **was jetzt läuft** und **was heute um 2
 - **Suche** client-seitig, offline, **fehlertolerant** („tatrot“ → Tatort), optional in Beschreibungen
 - **Genre-Filter**: Spielfilm, Serie, Sport, Doku, Nachrichten, Kinder, Unterhaltung, Magazin, Musik
 - **Details**: Beschreibung, Zeit, Dauer, Genre, Staffel/Folge, Jahr, Land, FSK, Wiederholung, Live/Neu, UT/AD/DGS, Regie/Besetzung, Regionalfenster, **weitere Termine**
-- **Merkliste** mit **Erinnerungen**, **Kalender-Export (.ics)** einzeln oder gesammelt, **Teilen** (Web Share API mit Fallback)
+- **Merkliste** mit **echten Push-Mitteilungen** (auch bei geschlossener App; iPhone nach „Zum Home-Bildschirm“), **Kalender-Export (.ics)** einzeln oder gesammelt, **Teilen** (Web Share API mit Fallback)
+- **Natives Gefühl**: Seitenübergänge, Zurück-Leiste, Wisch-zurück vom Rand, Detailansicht per Wischen schließen, Scroll-Position bleibt erhalten
+- **Senderlogos** optional (Wikimedia Commons, gemeinfreie Dateien)
 - **Einstellungen**: Hell/Dunkel/System, 4 Schriftgrößen, 24-h/12-h, Startansicht, Erinnerungsvorlauf, **Export/Import**, Daten löschen
 - **Onboarding** mit Senderauswahl (überspringbar, wiederholbar)
 - **PWA**: installierbar, offline, App-Shortcuts („Jetzt“, „20:15“, „Suche“), Update-Hinweis, iOS-Hinweise
@@ -101,6 +103,8 @@ Zwei Wege führen zu einem Deploy, beide nutzen `npx wrangler deploy`:
 | Push auf `main` | Cloudflare Workers Builds (Git-Verbindung) | Build-Befehl `npm run data && npm run build`, Deploy-Befehl `npx wrangler deploy`, Variable `PREVIOUS_DATA_URL=https://flimmer-tv.ben-online35.workers.dev/data` |
 | Alle 6 Stunden (neue Programmdaten) | GitHub Actions („Daten aktualisieren & veröffentlichen“) | Secrets `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID`, Variable `SITE_URL` |
 
+**Push-Mitteilungen:** Der Worker (`worker/index.ts`) bietet `/api/push/*` an; je Gerät speichert ein Durable Object Abo und Erinnerungen und weckt sich per Alarm. Der öffentliche VAPID-Schlüssel steht in `wrangler.jsonc`, der private als GitHub-Secret `VAPID_PRIVATE_KEY`; der Workflow **„Push einrichten“** überträgt ihn einmalig als Worker-Secret. Lokal: `.dev.vars` mit `VAPID_PRIVATE_KEY=…` und `ALLOW_ANY_PUSH_ENDPOINT=1`, dann `npx wrangler dev` und `node scripts/test-push-e2e.mjs`.
+
 **API-Token:** Cloudflare → *My Profile → API Tokens → Create Token → Vorlage „Edit Cloudflare Workers“*. Die **Account-ID** steht unter *Workers & Pages* in der rechten Seitenleiste.
 
 Fehlschläge des Daten-Jobs (Quelle gestört, zu wenige Sender) meldet GitHub per E-Mail; die Seite bleibt mit dem letzten guten Stand online.
@@ -119,9 +123,8 @@ Fehlschläge des Daten-Jobs (Quelle gestört, zu wenige Sender) meldet GitHub pe
 
 - [ ] Eigene Domain verbinden
 - [ ] Weitere Sender auf Wunsch (Konfiguration in `pipeline/channels.ts`)
-- [ ] „Serie beobachten“: neue Termine eines Titels automatisch auf die Merkliste
+- [ ] „Serie beobachten“: neue Termine eines Titels automatisch auf die Merkliste (mit Push)
 - [ ] Abonnierbarer Kalender-Feed (statische `.ics` je Merkliste via Share-Link)
-- [ ] Optional: Web-Push über Cloudflare Workers (Free) für Erinnerungen bei geschlossener App
 - [ ] Lizenzierte Datenquelle für Privatsender, falls verfügbar
 
 ## Lizenz

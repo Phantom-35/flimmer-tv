@@ -11,9 +11,14 @@ flowchart LR
     JOB[pipeline/run.ts<br/>holen · bereinigen · zusammenführen · Tipps]
     BUILD[vite build<br/>+ Service Worker + _headers]
   end
-  subgraph CF[Cloudflare Pages]
-    STATIC[(index.html · assets · sw.js<br/>data/index.json · days/* · details/*)]
+  subgraph CF[Cloudflare Worker flimmer-tv]
+    STATIC[(Assets: index.html · sw.js<br/>data/index.json · days/* · details/*)]
+    API[/api/push/*/]
+    DO[(Durable Object je Gerät<br/>Abo + Erinnerungen, Alarm)]
+    API --> DO
   end
+  PUSH[Push-Dienst<br/>Apple · Google · Mozilla]
+  DO -- Web Push, verschlüsselt --> PUSH --> SW
   subgraph Gerät
     SW[Service Worker<br/>Precache + Runtime-Cache]
     APP[Preact-App]
@@ -26,12 +31,14 @@ flowchart LR
   STATIC --> SW --> APP
   APP <--> LS
   APP -- .ics --> KAL[Kalender des Geräts]
+  APP -- Abo + Erinnerungen --> API
 ```
 
 ## Verzeichnisse
 
 ```
 pipeline/        Daten-Job (Node/TS): Quellen, Normalisierung, Ausgabe
+worker/          Cloudflare Worker: Push-API, Durable Object, Web-Push-Krypto
 src/shared/      Von Job und App gemeinsam genutzt: Typen, Zeitlogik, Genres
 src/app/         App: store/ (Signals), views/, components/, lib/ (Suche, ICS, Erinnerungen)
 app.config.ts    Betreiberangaben (Platzhalter!) für Impressum/Datenschutz

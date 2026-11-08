@@ -91,11 +91,7 @@ function SortableFavorites({ list }: { list: Channel[] }) {
           >
             <Icon name="drag" size={22} />
           </span>
-          <ChannelBadge channel={c} size="sm" />
           <span class="sort-name">{c.name}</span>
-          <span class="sort-pos" aria-hidden="true">
-            {i + 1}
-          </span>
           <button
             type="button"
             class="icon-btn"
@@ -142,17 +138,15 @@ export function ChannelsManageView() {
   }
   return (
     <div class="view view-manage">
-      <PageHeader title="Sender verwalten" sub="Lege fest, welche Sender du siehst und in welcher Reihenfolge." />
-      <section aria-labelledby="fav-h" class="card">
-        <h2 id="fav-h" class="section-title">
-          <Icon name="star" size={18} /> Meine Sender <span class="count">{favorites.length}</span>
-        </h2>
-        <p class="muted small">Ziehen am Griff oder Pfeiltasten zum Sortieren. Diese Reihenfolge gilt überall in der App.</p>
+      <PageHeader title="Sender verwalten" />
+      <section aria-labelledby="fav-h">
+        <h2 id="fav-h" class="group-title">Meine Sender · {favorites.length}</h2>
         <SortableFavorites list={favorites} />
+        <p class="group-note">Zum Sortieren am Griff ziehen. Die Reihenfolge gilt überall in der App.</p>
       </section>
 
-      <section aria-labelledby="all-h" class="card">
-        <h2 id="all-h" class="section-title">
+      <section aria-labelledby="all-h">
+        <h2 id="all-h" class="group-title">
           Alle Sender
         </h2>
         <div class="searchbox searchbox-small">
