@@ -73,7 +73,7 @@ jobs:
           # Beim Einfügen unter Windows rutschen leicht Zeilenumbrüche, Leer- oder Steuerzeichen mit -> nur gültige Zeichen behalten.
           export CLOUDFLARE_API_TOKEN="$(printf '%s' "$RAW_TOKEN" | LC_ALL=C tr -cd 'A-Za-z0-9_-')"
           export CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$RAW_ACCOUNT" | LC_ALL=C tr -cd 'a-f0-9')"
-          echo "Token-Länge: ${#CLOUDFLARE_API_TOKEN}, Account-ID-Länge: ${#CLOUDFLARE_ACCOUNT_ID} (erwartet: 40 bzw. 32)"
+          echo "Token-Länge: ${#CLOUDFLARE_API_TOKEN}, Account-ID-Länge: ${#CLOUDFLARE_ACCOUNT_ID} (Account-ID: 32)"
           npx --yes wrangler@4 deploy
 
       - name: Hinweis ohne Hosting-Zugang
