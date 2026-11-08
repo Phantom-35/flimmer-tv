@@ -16,7 +16,7 @@ Werbefrei · ohne Tracking · offline nutzbar · installierbar</p>
 
 ---
 
-> ⚠️ **Vor dem Livegang:** In [`app.config.ts`](app.config.ts) die Platzhalter `[NAME]`, `[STRASSE HAUSNUMMER]`, `[PLZ ORT]` und `[E-MAIL]` ausfüllen. Sie erscheinen in Impressum, Datenschutzerklärung und Kontakt. Solange Platzhalter enthalten sind, zeigt die App dort einen Warnhinweis. Die Rechtstexte sind sorgfältig erstellt, **ersetzen aber keine Rechtsberatung**.
+> ℹ️ **Betreiberangaben** (Name, Anschrift, E-Mail, Aufsichtsbehörde) stehen zentral in [`app.config.ts`](app.config.ts) und erscheinen in Impressum, Datenschutzerklärung und Kontakt. Werte in `[ECKIGEN KLAMMERN]` gelten als Platzhalter und lösen in der App einen Warnhinweis aus. Die Rechtstexte sind sorgfältig erstellt, **ersetzen aber keine Rechtsberatung**.
 
 Flimmer öffnet sich und zeigt sofort, **was jetzt läuft** und **was heute um 20:15 kommt** – in zwei Sekunden checkbar. Keine Werbung, keine Klickstrecken, keine Konten, keine Cookies.
 

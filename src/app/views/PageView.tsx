@@ -56,15 +56,33 @@ function Impressum() {
       <p>
         {op.name}, Anschrift wie oben.
       </p>
-      <h2>Hinweise</h2>
+      <h2>Über das Projekt</h2>
       <p>
-        {APP_CONFIG.appName} ist ein privates, nicht-kommerzielles Projekt ohne Werbung. Die Programmdaten stammen aus den unter{' '}
-        <a href="#/seite/quellen">Datenquellen</a> genannten Quellen und werden automatisch verarbeitet. Für Richtigkeit, Vollständigkeit und Aktualität
-        der Programmangaben wird keine Gewähr übernommen; maßgeblich sind die Angaben der Sender.
+        {APP_CONFIG.appName} ist ein privates, nicht-kommerzielles Projekt. Die App ist kostenlos, enthält keine Werbung und steht in keiner Verbindung
+        zu den genannten Fernsehsendern.
       </p>
+      <h2>Verbraucherstreitbeilegung</h2>
+      <p>Ich bin nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+      <h2>Haftung für Inhalte</h2>
       <p>
-        Für Inhalte verlinkter externer Seiten sind ausschließlich deren Betreiber verantwortlich. Senderbezeichnungen sind Marken bzw. Namen der
-        jeweiligen Inhaber und werden nur zur Identifikation genannt. Es werden keine Senderlogos verwendet.
+        Die Inhalte wurden mit größter Sorgfalt erstellt. Die Programmangaben werden automatisch aus den unter{' '}
+        <a href="#/seite/quellen">Datenquellen</a> genannten externen Quellen übernommen und können sich kurzfristig ändern. Für ihre Richtigkeit,
+        Vollständigkeit und Aktualität kann ich keine Gewähr übernehmen. Maßgeblich sind die Angaben der Sender.
+      </p>
+      <h2>Haftung für Links</h2>
+      <p>
+        Die App enthält Links zu externen Seiten Dritter, auf deren Inhalte ich keinen Einfluss habe. Für diese Inhalte ist stets der jeweilige Anbieter
+        verantwortlich. Bei Bekanntwerden von Rechtsverletzungen entferne ich solche Links umgehend.
+      </p>
+      <h2>Marken und Daten</h2>
+      <p>
+        Senderbezeichnungen sind Marken bzw. Namen der jeweiligen Inhaber und werden nur zur Identifikation genannt. Es werden keine Senderlogos und
+        keine Sendungsbilder verwendet. Programmdaten: ARD-Programm-API und XMLTV-Sammlung von epgshare01 (Rechte bei den jeweiligen Sendern).
+      </p>
+      <h2>Urheberrecht</h2>
+      <p>
+        Gestaltung, Texte und Programmcode von {APP_CONFIG.appName} unterliegen dem deutschen Urheberrecht. Eine Vervielfältigung oder Verwendung
+        außerhalb der Grenzen des Urheberrechts bedarf meiner vorherigen Zustimmung.
       </p>
     </>
   );
@@ -78,14 +96,15 @@ function Datenschutz() {
 
       <h2>1. Verantwortlicher</h2>
       <Address />
-      <p>E-Mail: {op.email}</p>
+      <p>E-Mail: {op.email.startsWith('[') ? op.email : <a href={`mailto:${op.email}`}>{op.email}</a>}</p>
+      <p>Ein Datenschutzbeauftragter ist nicht bestellt und gesetzlich nicht erforderlich.</p>
 
       <h2>2. Bereitstellung der App (Hosting)</h2>
       <p>
         Die App und die Programmdaten werden als statische Dateien über {APP_CONFIG.hosting.name}, {APP_CONFIG.hosting.address}, ausgeliefert. Beim Abruf
         verarbeitet der Hoster technisch notwendig Verbindungsdaten (insbesondere IP-Adresse, Zeitpunkt, abgerufene Datei, Browser-Kennung), um die
-        Dateien auszuliefern und Angriffe abzuwehren. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer sicheren und
-        stabilen Bereitstellung). Der Betreiber selbst wertet diese Daten nicht aus und erstellt keine Nutzungsprofile.
+        Dateien auszuliefern und Angriffe abzuwehren. Diese Protokolle werden nur kurzzeitig gespeichert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer sicheren und
+        stabilen Bereitstellung). Ich selbst werte diese Daten nicht aus und erstelle keine Nutzungsprofile.
       </p>
       <p>
         Der Hoster ist ein Unternehmen mit Sitz in den USA. Eine Übermittlung in die USA ist möglich; sie stützt sich auf den
@@ -101,7 +120,7 @@ function Datenschutz() {
       <p>
         Flimmer speichert folgende Daten ausschließlich lokal in deinem Browser (Local Storage und Cache Storage): deine Einstellungen (z. B.
         Farbschema, Schriftgröße), deine Senderauswahl und -reihenfolge, deine Merkliste mit Erinnerungen sowie die App-Dateien und
-        Programmdaten für die Offline-Nutzung. Diese Daten werden nicht an den Betreiber oder Dritte übertragen.
+        Programmdaten für die Offline-Nutzung. Diese Daten werden weder an mich noch an Dritte übertragen.
       </p>
       <p>
         Die Speicherung ist für den von dir ausdrücklich gewünschten Dienst unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Du kannst alle Daten
@@ -128,11 +147,28 @@ function Datenschutz() {
       </p>
 
       <h2>7. Deine Rechte</h2>
+      <p>Du hast jederzeit das Recht auf</p>
+      <ul class="plain">
+        <li>Auskunft über deine gespeicherten Daten (Art. 15 DSGVO),</li>
+        <li>Berichtigung (Art. 16 DSGVO) und Löschung (Art. 17 DSGVO),</li>
+        <li>Einschränkung der Verarbeitung (Art. 18 DSGVO),</li>
+        <li>Datenübertragbarkeit (Art. 20 DSGVO),</li>
+        <li>Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21 DSGVO).</li>
+      </ul>
       <p>
-        Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18),
-        Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21). Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren
-        (Art. 77 DSGVO), etwa bei der Behörde deines Wohnorts.
+        Eine kurze Nachricht an {op.email} genügt. Da Flimmer ohne Konto auskommt und deine Einstellungen nur auf deinem Gerät liegen, speichere ich
+        über dich in der Regel keine Daten.
       </p>
+      <p>
+        Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO), zum Beispiel bei der für mich zuständigen Behörde:{' '}
+        <a href={APP_CONFIG.supervisoryAuthority.url} target="_blank" rel="noopener noreferrer">
+          {APP_CONFIG.supervisoryAuthority.name}
+        </a>
+        .
+      </p>
+
+      <h2>8. Änderungen</h2>
+      <p>Wenn sich die App oder die Rechtslage ändert, passe ich diese Erklärung an. Es gilt die jeweils hier veröffentlichte Fassung.</p>
       <p class="muted small">Stand: November 2026</p>
     </>
   );

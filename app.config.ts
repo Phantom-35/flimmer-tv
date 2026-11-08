@@ -1,10 +1,9 @@
 /**
- * ZENTRALE KONFIGURATION – bitte vor dem Livegang ausfüllen!
+ * ZENTRALE KONFIGURATION
  *
- * Alle Werte in [ECKIGEN KLAMMERN] sind bewusst markierte Platzhalter.
- * Sie erscheinen im Impressum, in der Datenschutzerklärung und auf der
- * Kontaktseite. Solange Platzhalter enthalten sind, zeigt die App auf
- * diesen Seiten einen deutlichen Hinweis an.
+ * Betreiberangaben für Impressum, Datenschutzerklärung und Kontaktseite.
+ * Werte in [ECKIGEN KLAMMERN] gelten als Platzhalter: Solange einer
+ * enthalten ist, zeigt die App auf diesen Seiten einen Warnhinweis an.
  */
 export const APP_CONFIG = {
   appName: 'Flimmer',
@@ -12,13 +11,19 @@ export const APP_CONFIG = {
 
   /** Angaben für Impressum (§ 5 DDG) und Datenschutz (Art. 13 DSGVO). */
   operator: {
-    name: '[NAME]',
-    street: '[STRASSE HAUSNUMMER]',
-    city: '[PLZ ORT]',
+    name: 'Ben Griese',
+    street: 'Burghofweg 1',
+    city: '53340 Meckenheim',
     country: 'Deutschland',
-    email: '[E-MAIL]',
+    email: 'phandevstudios@gmx.de',
     /** Optional, sonst leer lassen. */
     phone: '',
+  },
+
+  /** Zuständige Datenschutz-Aufsichtsbehörde (Sitz des Betreibers). */
+  supervisoryAuthority: {
+    name: 'Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen',
+    url: 'https://www.ldi.nrw.de',
   },
 
   /** Hoster der statischen Seite (für die Datenschutzerklärung). */
