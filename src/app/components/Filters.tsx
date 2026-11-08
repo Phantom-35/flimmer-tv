@@ -4,8 +4,10 @@ import { dayLabel, parseIsoDate, shortWeekday } from '../../shared/time';
 import type { GenreKey } from '../../shared/types';
 import { hasFavorites } from '../store/channels';
 import { index, today } from '../store/data';
+import { Icon } from './Icon';
 
-export function GenreChips({
+/** Kompakter Genre-Filter als natives Auswahlfeld (zugänglich, platzsparend). */
+export function GenreFilter({
   value,
   onChange,
   counts,
@@ -16,37 +18,33 @@ export function GenreChips({
 }) {
   const options = GENRES.filter((g) => g.key !== 'sonstiges' && (!counts || (counts[g.key] ?? 0) > 0 || value === g.key));
   return (
-    <div class="chips" role="group" aria-label="Nach Genre filtern">
-      <button type="button" class={`chip${value === '' ? ' active' : ''}`} aria-pressed={value === ''} onClick={() => onChange('')}>
-        Alle
-      </button>
-      {options.map((g) => (
-        <button
-          type="button"
-          key={g.key}
-          class={`chip chip-genre g-${g.key}${value === g.key ? ' active' : ''}`}
-          aria-pressed={value === g.key}
-          onClick={() => onChange(value === g.key ? '' : g.key)}
-        >
-          {g.label}
-          {counts?.[g.key] ? <span class="chip-count">{counts[g.key]}</span> : null}
-        </button>
-      ))}
-    </div>
+    <label class={`select${value ? ' select-active' : ''}`}>
+      <span class="sr-only">Genre</span>
+      <select value={value} onChange={(e) => onChange((e.target as HTMLSelectElement).value as GenreKey | '')}>
+        <option value="">Alle Genres</option>
+        {options.map((g) => (
+          <option key={g.key} value={g.key}>
+            {g.label}
+            {counts?.[g.key] ? ` (${counts[g.key]})` : ''}
+          </option>
+        ))}
+      </select>
+      <Icon name="chevronDown" size={16} />
+    </label>
   );
 }
 
-export function ScopeToggle({ value, onChange }: { value: 'meine' | 'alle'; onChange: (v: 'meine' | 'alle') => void }) {
+export function ScopeFilter({ value, onChange }: { value: 'meine' | 'alle'; onChange: (v: 'meine' | 'alle') => void }) {
   if (!hasFavorites.value) return null;
   return (
-    <div class="scope" role="group" aria-label="Senderauswahl">
-      <button type="button" class={value === 'meine' ? 'active' : ''} aria-pressed={value === 'meine'} onClick={() => onChange('meine')}>
-        Meine Sender
-      </button>
-      <button type="button" class={value === 'alle' ? 'active' : ''} aria-pressed={value === 'alle'} onClick={() => onChange('alle')}>
-        Alle
-      </button>
-    </div>
+    <label class="select">
+      <span class="sr-only">Senderauswahl</span>
+      <select value={value} onChange={(e) => onChange((e.target as HTMLSelectElement).value as 'meine' | 'alle')}>
+        <option value="meine">Meine Sender</option>
+        <option value="alle">Alle Sender</option>
+      </select>
+      <Icon name="chevronDown" size={16} />
+    </label>
   );
 }
 

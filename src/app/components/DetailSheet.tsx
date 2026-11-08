@@ -119,20 +119,16 @@ export function DetailSheet() {
                 <span>Läuft · {minutesLeft(p, nowMs)}</span>
               </div>
             ) : null}
-            <div class="sheet-tags">
+            <p class="sheet-tags meta">
               <GenreTag g={p.g} raw={p.gr} />
-              {p.gr ? <span class="tag">{p.gr}</span> : null}
+              {p.gr && p.g !== 'sonstiges' ? <span>{p.gr}</span> : null}
               <Flags p={p} />
-              {p.fsk !== undefined ? <span class="tag" title={fskLabel(p.fsk)}>FSK {p.fsk}</span> : null}
-              {p.ut ? <span class="tag" title="Untertitel">UT</span> : null}
-              {p.ad ? <span class="tag" title="Audiodeskription">AD</span> : null}
-              {p.dgs ? <span class="tag" title="Gebärdensprache">DGS</span> : null}
-            </div>
-            {p.tip ? (
-              <p class="sheet-tip">
-                <Icon name="sparkle" size={16} /> <span>Tipp: {p.tip}</span>
-              </p>
-            ) : null}
+              {p.fsk !== undefined ? <span title={fskLabel(p.fsk)}>FSK {p.fsk}</span> : null}
+              {p.ut ? <abbr title="Untertitel">UT</abbr> : null}
+              {p.ad ? <abbr title="Audiodeskription">AD</abbr> : null}
+              {p.dgs ? <abbr title="Gebärdensprache">DGS</abbr> : null}
+            </p>
+            {p.tip ? <p class="sheet-tip">Tipp: {p.tip}</p> : null}
 
             <div class="sheet-actions">
               <button type="button" class={`action${w ? ' on' : ''}`} aria-pressed={!!w} onClick={() => toggleWatch(p, chId)}>
@@ -163,7 +159,7 @@ export function DetailSheet() {
                   <p key={i}>{para}</p>
                 ))}
               </div>
-            ) : getDetails(p) === undefined && state === 'ready' ? null : null}
+            ) : null}
 
             <dl class="facts">
               {p.y ? (

@@ -4,7 +4,6 @@ import { GROUP_LABEL } from '../views/ChannelsManageView';
 import { channelPrefs, DEFAULT_FAVORITES, orderedChannels, setFavorites } from '../store/channels';
 import { updateSettings } from '../store/settings';
 import { onboardingOpen } from '../store/ui';
-import { ChannelBadge } from './bits';
 import { Icon } from './Icon';
 import { Logo } from './Shell';
 
@@ -125,7 +124,6 @@ export function Onboarding() {
                     {list.map((c) => (
                       <label key={c.id} class={`ob-ch${picked.has(c.id) ? ' on' : ''}`}>
                         <input type="checkbox" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
-                        <ChannelBadge channel={c} size="sm" />
                         <span>{c.name}</span>
                         <Icon name="check" size={16} class="ob-check" />
                       </label>

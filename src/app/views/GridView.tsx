@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { dayLabel, formatTime, tvDayOf, tvDayRange, tvDayTime } from '../../shared/time';
 import type { Channel, GenreKey, Programme } from '../../shared/types';
 import { ChannelBadge, EmptyState, PageHeader } from '../components/bits';
-import { DayPicker, GenreChips, ScopeToggle } from '../components/Filters';
+import { DayPicker, GenreFilter, ScopeFilter } from '../components/Filters';
 import { Icon } from '../components/Icon';
 import { navigate, openDetail, route, setQuery } from '../router';
 import { myChannels, visibleChannels } from '../store/channels';
@@ -253,16 +253,14 @@ export function GridView() {
 
   return (
     <div class="view view-grid">
-      <PageHeader title="Programm" sub={dayLabel(day, t, true)}>
-        <ScopeToggle value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
-      </PageHeader>
+      <PageHeader title="Programm" sub={dayLabel(day, t, true)} />
       <div class="toolbar toolbar-days">
         <DayPicker value={day} onChange={(d) => navigate(`/programm/${d}${r.query.toString() ? `?${r.query}` : ''}`, true)} />
       </div>
       <div class="toolbar toolbar-jumps">
         <button
           type="button"
-          class="btn btn-accent btn-small"
+          class="btn btn-small"
           onClick={() => (day === t ? scrollToTime(Date.now()) : navigate(`/programm/${t}`))}
           aria-keyshortcuts="n"
         >
@@ -293,8 +291,9 @@ export function GridView() {
           <Icon name="zoomIn" size={20} />
         </button>
       </div>
-      <div class="toolbar toolbar-chips">
-        <GenreChips value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
+      <div class="toolbar filters">
+        <ScopeFilter value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
+        <GenreFilter value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
       </div>
       {!loaded ? (
         dayFailed(day) ? (

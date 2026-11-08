@@ -36,7 +36,7 @@ async function notify(item: WatchItem): Promise<void> {
   const startsIn = Math.round((item.s * 1000 - Date.now()) / 60000);
   const when = startsIn > 0 ? `in ${startsIn} Min.` : 'jetzt';
   const body = `${formatTime(item.s * 1000, settings.value.h12)} · ${ch} – beginnt ${when}`;
-  showToast(`⏰ ${item.t} – ${ch}, beginnt ${when}`, { duration: 10000 });
+  showToast(`Erinnerung: ${item.t} (${ch}) beginnt ${when}`, { duration: 10000 });
   if (notificationPermission() !== 'granted') return;
   const options: NotificationOptions = {
     body,

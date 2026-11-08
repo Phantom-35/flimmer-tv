@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { dayLabel, tvDayOf } from '../../shared/time';
 import type { GenreKey, Programme } from '../../shared/types';
 import { EmptyState, PageHeader } from '../components/bits';
-import { GenreChips } from '../components/Filters';
+import { GenreFilter } from '../components/Filters';
 import { Icon } from '../components/Icon';
 import { ProgrammeLine } from '../components/ProgrammeRow';
 import { prepareField, prepareQuery, scoreDocument } from '../lib/search';
@@ -118,7 +118,7 @@ export function SearchView() {
 
   return (
     <div class="view view-search">
-      <PageHeader title="Suche" sub="Titel, Untertitel und Genre – auf Wunsch auch Beschreibungen" />
+      <PageHeader title="Suche" />
       <form
         class="searchbox"
         role="search"
@@ -160,8 +160,8 @@ export function SearchView() {
           <span>Beschreibungen durchsuchen <small>(lädt ca. 3 MB)</small></span>
         </label>
       </div>
-      <div class="toolbar toolbar-chips">
-        <GenreChips value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
+      <div class="toolbar filters">
+        <GenreFilter value={genre} onChange={(g) => setQuery({ genre: g || undefined })} />
       </div>
       {!qParam ? (
         <div class="search-suggest">

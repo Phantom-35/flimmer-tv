@@ -48,10 +48,12 @@ export function ProgressBar({ p, nowMs, label }: { p: Pick<Programme, 's' | 'e'>
   );
 }
 
+/** Genre als schlichter Text (bewusst ohne farbige Pillen). */
 export function GenreTag({ g, raw }: { g: GenreKey; raw?: string | undefined }) {
+  if (g === 'sonstiges' && !raw) return null;
   return (
-    <span class={`tag tag-genre g-${g}`} title={raw}>
-      {GENRE_LABEL[g]}
+    <span class="meta-genre" title={raw}>
+      {g === 'sonstiges' ? raw : GENRE_LABEL[g]}
     </span>
   );
 }
@@ -59,9 +61,9 @@ export function GenreTag({ g, raw }: { g: GenreKey; raw?: string | undefined }) 
 export function Flags({ p }: { p: Programme }) {
   return (
     <>
-      {p.l ? <span class="tag tag-live">Live</span> : null}
-      {p.n ? <span class="tag tag-new">Neu</span> : null}
-      {p.r ? <span class="tag">Wdh.</span> : null}
+      {p.l ? <span class="flag flag-live">Live</span> : null}
+      {p.n ? <span class="flag flag-new">Neu</span> : null}
+      {p.r ? <span class="flag">Wdh.</span> : null}
     </>
   );
 }

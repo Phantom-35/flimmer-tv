@@ -16,6 +16,8 @@ test.describe('Kernflüsse', () => {
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'Weiter' }).click();
     await expect(page.getByRole('heading', { name: 'Welche Sender schaust du?' })).toBeVisible();
+    // Hinter dem Dialog darf die Seite nicht mitscrollen.
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe('hidden');
     await page.getByRole('button', { name: 'Keine' }).click();
     // Die Checkboxen sind visuell versteckt; Nutzer klicken die ganze Karte (Label).
     const card = (name: string) => page.locator('label.ob-ch').filter({ has: page.getByText(name, { exact: true }) });
@@ -25,7 +27,7 @@ test.describe('Kernflüsse', () => {
     await page.getByRole('button', { name: 'Weiter' }).click();
     await page.getByRole('button', { name: 'Los geht’s' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Jetzt im TV' })).toBeVisible();
-    await expect(page.getByText('2 Sender')).toBeVisible();
+    await expect(page.locator('.nowcard')).toHaveCount(2);
   });
 
   test('Jetzt im TV zeigt laufende Sendungen mit Fortschritt', async ({ page }) => {

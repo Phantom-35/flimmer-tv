@@ -25,12 +25,12 @@ export function NowCard({
     <article class={`nowcard${current ? '' : ' nowcard-off'}`} aria-label={channel.name}>
       <a class="nowcard-channel" href={`#/sender/${channel.id}`} aria-label={`Tagesprogramm ${channel.name}`}>
         <ChannelBadge channel={channel} />
-        <span class="nowcard-chname">{channel.name}</span>
       </a>
       {main ? (
         <>
           <button type="button" class="nowcard-main" onClick={() => openDetail(main.i)}>
-            <span class="nowcard-meta">
+            <span class="nowcard-meta meta">
+              <span class="nowcard-chname">{channel.name}</span>
               {current ? <TimeRange p={current} /> : <span>ab <Time ms={main.s * 1000} /></span>}
               <GenreTag g={main.g} raw={main.gr} />
               <Flags p={main} />
@@ -98,17 +98,13 @@ export function ProgrammeLine({
             {p.t}
             {running ? <span class="sr-only"> (läuft gerade)</span> : null}
           </span>
-          <span class="line-meta">
+          {p.ep || p.st ? <span class="line-sub">{[p.ep, p.st].filter(Boolean).join(' · ')}</span> : null}
+          <span class="line-meta meta">
             {showChannel && channel ? <span class="line-ch">{channel.name}</span> : null}
             <GenreTag g={p.g} raw={p.gr} />
             <Flags p={p} />
-            {p.ep || p.st ? <span class="line-sub">{[p.ep, p.st].filter(Boolean).join(' · ')}</span> : null}
           </span>
-          {p.tip ? (
-            <span class="line-tipreason">
-              <Icon name="sparkle" size={14} /> {p.tip}
-            </span>
-          ) : null}
+          {p.tip ? <span class="line-tipreason">Tipp: {p.tip}</span> : null}
           {running ? <ProgressBar p={p} nowMs={nowMs} /> : null}
         </span>
       </button>

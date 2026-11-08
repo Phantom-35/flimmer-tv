@@ -1,9 +1,8 @@
-import { useEffect, useMemo } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import { addDays, dayLabel, formatTime, tvDayOf, tvDayTime } from '../../shared/time';
 import type { Channel, GenreKey, Programme } from '../../shared/types';
-import { ChannelBadge, EmptyState, PageHeader, Segmented, Skeleton } from '../components/bits';
-import { GenreChips, ScopeToggle } from '../components/Filters';
-import { Icon } from '../components/Icon';
+import { EmptyState, PageHeader, Segmented, Skeleton } from '../components/bits';
+import { GenreFilter, ScopeFilter } from '../components/Filters';
 import { NowCard } from '../components/ProgrammeRow';
 import { openDetail, route, setQuery } from '../router';
 import { myChannels, visibleChannels } from '../store/channels';
@@ -57,29 +56,35 @@ function TipsStrip({ channels, day, nowMs }: { channels: Channel[]; day: string;
       .slice(0, 10)
       .sort((a, b) => a.p.s - b.p.s);
   }, [channels, day, dataVersion.value, Math.floor(nowMs / 300000)]);
+  const [all, setAll] = useState(false);
   if (!tips.length) return null;
   const h12 = settings.value.h12;
+  const shown = all ? tips : tips.slice(0, 3);
   return (
     <section class="tips" aria-labelledby="tips-h">
       <h2 id="tips-h" class="section-title">
-        <Icon name="sparkle" size={18} /> Tipps {dayLabel(day, today.value) === 'Heute' ? 'für heute' : `für ${dayLabel(day, today.value)}`}
-        <span class="section-hint">nach nachvollziehbaren Kriterien, nicht gekauft</span>
+        Tipps {dayLabel(day, today.value) === 'Heute' ? 'für heute' : `für ${dayLabel(day, today.value)}`}
       </h2>
       <ul class="tips-list">
-        {tips.map(({ p, ch }) => (
+        {shown.map(({ p, ch }) => (
           <li key={p.i}>
-            <button type="button" class="tipcard" onClick={() => openDetail(p.i)}>
-              <span class="tipcard-top">
-                <ChannelBadge channel={ch} size="sm" />
-                <span class="tipcard-time">{formatTime(p.s * 1000, h12)}</span>
-                <span class="tipcard-ch">{ch.name}</span>
+            <button type="button" class="tiprow" onClick={() => openDetail(p.i)}>
+              <span class="tiprow-time">{formatTime(p.s * 1000, h12)}</span>
+              <span class="tiprow-body">
+                <span class="tiprow-title">{p.t}</span>
+                <span class="tiprow-meta">
+                  {ch.name} · {p.tip}
+                </span>
               </span>
-              <span class="tipcard-title">{p.t}</span>
-              <span class="tipcard-reason">{p.tip}</span>
             </button>
           </li>
         ))}
       </ul>
+      {tips.length > 3 ? (
+        <button type="button" class="linkbtn" aria-expanded={all} onClick={() => setAll(!all)}>
+          {all ? 'Weniger anzeigen' : `Alle ${tips.length} Tipps`}
+        </button>
+      ) : null}
     </section>
   );
 }
@@ -122,16 +127,15 @@ export function NowView() {
 
   return (
     <div class="view view-now">
-      <PageHeader title={label} sub={mode === 'jetzt' ? `${formatTime(nowMs, settings.value.h12)} Uhr · ${channels.length} Sender` : `Was um ${formatTime(ts, settings.value.h12)} läuft`}>
-        <ScopeToggle value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
-      </PageHeader>
+      <PageHeader title={label} sub={mode === 'jetzt' ? `${formatTime(nowMs, settings.value.h12)} Uhr` : `Was um ${formatTime(ts, settings.value.h12)} läuft`} />
       <div class="toolbar">
         <Segmented label="Zeitpunkt" options={MODES} value={mode} onChange={(v) => setQuery({ zeit: v === 'jetzt' ? undefined : v })} />
       </div>
-      {(mode === 'jetzt' || mode === '2015') && loaded ? <TipsStrip channels={channels} day={day} nowMs={nowMs} /> : null}
-      <div class="toolbar toolbar-chips">
-        <GenreChips value={genre} counts={loaded ? counts : undefined} onChange={(g) => setQuery({ genre: g || undefined })} />
+      <div class="toolbar filters">
+        <ScopeFilter value={scope} onChange={(v) => setQuery({ sender: v === 'alle' ? 'alle' : undefined })} />
+        <GenreFilter value={genre} counts={loaded ? counts : undefined} onChange={(g) => setQuery({ genre: g || undefined })} />
       </div>
+      {(mode === 'jetzt' || mode === '2015') && loaded && !genre ? <TipsStrip channels={channels} day={day} nowMs={nowMs} /> : null}
       {!loaded && !failed ? (
         <Skeleton rows={8} variant="card" />
       ) : failed && !loaded ? (

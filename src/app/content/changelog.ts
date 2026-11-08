@@ -1,6 +1,15 @@
 /** Sichtbarer Changelog in "Über Flimmer". Neueste Version oben. */
 export const CHANGELOG: { version: string; date: string; items: string[] }[] = [
   {
+    version: '1.1.0',
+    date: '2026-11-08',
+    items: [
+      'Ruhigeres Design: Listen statt Karten, neutrale Senderkürzel, schlichte Filter',
+      'Tipps als kompakte Liste',
+      'Einführung auf dem Handy im Vollbild, Hintergrund scrollt nicht mehr mit',
+    ],
+  },
+  {
     version: '1.0.0',
     date: '2026-11-08',
     items: [
