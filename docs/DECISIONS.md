@@ -96,3 +96,7 @@ Einfach, verbreitet, erlaubt Wiederverwendung des Codes. Die **Daten** fallen ni
 ## 12. Branches & Commits
 
 `main` = veröffentlichter Stand (Deploy), `develop` = Integration; Feature-Branches → PR → `develop` → `main`. Conventional Commits.
+
+## 13. Bekannte `npm audit`-Meldungen (akzeptiert)
+
+`npm audit` meldet moderate Schwachstellen in `deepmerge` und `glob` – beide nur transitiv über `workbox-build` (Build-Zeit von `vite-plugin-pwa`). Sie landen nicht im ausgelieferten Code und verarbeiten nur eigene Projektdateien. Der vorgeschlagene „Fix“ wäre ein Downgrade von `vite-plugin-pwa` auf 1.x. Entscheidung: nicht downgraden, bei neuer Workbox-Version aktualisieren.
