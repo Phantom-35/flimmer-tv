@@ -93,6 +93,10 @@ Keine Cookies, kein Tracking, keine Webfonts/CDNs, keine Bilder Dritter, `Referr
 
 Einfach, verbreitet, erlaubt Wiederverwendung des Codes. Die **Daten** fallen nicht unter die Lizenz (Rechte der Sender/Quellen). Solange das Repo privat ist, hat die Lizenz nur Bedeutung für eine spätere Veröffentlichung.
 
+## 4b. Nachtrag: Cloudflare Workers statt Pages
+
+Das Projekt wurde als Cloudflare **Worker mit statischen Assets** angelegt (Cloudflare empfiehlt Workers inzwischen auch für reine statische Seiten). Funktional identisch: `_headers` gilt weiter, statische Requests sind kostenlos. `wrangler.jsonc` beschreibt das Deployment; `not_found_handling: none`, damit fehlende Daten ehrlich 404 liefern.
+
 ## 12. Branches & Commits
 
 `main` = veröffentlichter Stand (Deploy), `develop` = Integration; Feature-Branches → PR → `develop` → `main`. Conventional Commits.

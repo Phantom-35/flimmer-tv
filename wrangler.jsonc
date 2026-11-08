@@ -1,0 +1,16 @@
+// Cloudflare Worker mit statischen Assets (kein eigener Worker-Code nötig).
+// Deploy: `npm run data && npm run build && npx wrangler deploy`
+// – automatisch durch Cloudflare Workers Builds (bei Push) und den
+// GitHub-Workflow "Daten aktualisieren & veröffentlichen" (alle 6 h).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "flimmer-tv",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // Hash-Routing: nur "/" wird gebraucht. Fehlende Dateien (z. B. Programmdaten)
+    // sollen ehrlich 404 liefern statt index.html.
+    "not_found_handling": "none"
+  },
+  "observability": { "enabled": true }
+}

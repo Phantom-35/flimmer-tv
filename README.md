@@ -90,20 +90,22 @@ Weitere Befehle:
 | `npm run icons` | PNG-Icons aus SVG erzeugen |
 | `npm run screenshots` | README-/Manifest-Screenshots (Preview muss laufen) |
 
-## Deployment (kostenlos)
+## Deployment (kostenlos, Cloudflare Workers)
 
-1. **Cloudflare-Konto** anlegen (Free, keine Kreditkarte) → *Workers & Pages* → *Create* → *Pages* → *Direct Upload* → Projektname `flimmer` (einmalig mit beliebigem Ordner anlegen, oder erster Workflow-Lauf erstellt es).
-2. **API-Token** erstellen: *My Profile → API Tokens → Create Token → „Cloudflare Pages – Edit“*. **Account-ID** steht in der Dashboard-Seitenleiste.
-3. Im GitHub-Repo unter *Settings → Secrets and variables → Actions*:
-   - Secret `CLOUDFLARE_API_TOKEN`, Secret `CLOUDFLARE_ACCOUNT_ID`
-   - Variable `SITE_URL` = `https://flimmer.pages.dev` (bzw. eigene Domain) – für den Fallback auf den letzten guten Stand
-   - optional Variable `CF_PAGES_PROJECT`, falls der Projektname nicht `flimmer` ist
-4. Workflow **„Daten aktualisieren & veröffentlichen“** manuell starten (*Actions → Run workflow*). Danach läuft er alle 6 Stunden und bei jedem Push auf `main`.
-5. Optional eigene Domain in Cloudflare Pages verbinden.
+Live: **https://flimmer-tv.ben-online35.workers.dev** – ein Cloudflare Worker, der nur statische Dateien ausliefert (`wrangler.jsonc`, kein eigener Worker-Code).
+
+Zwei Wege führen zu einem Deploy, beide nutzen `npx wrangler deploy`:
+
+| Auslöser | Wer baut | Einrichtung |
+|---|---|---|
+| Push auf `main` | Cloudflare Workers Builds (Git-Verbindung) | Build-Befehl `npm run data && npm run build`, Deploy-Befehl `npx wrangler deploy`, Variable `PREVIOUS_DATA_URL=https://flimmer-tv.ben-online35.workers.dev/data` |
+| Alle 6 Stunden (neue Programmdaten) | GitHub Actions („Daten aktualisieren & veröffentlichen“) | Secrets `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID`, Variable `SITE_URL` |
+
+**API-Token:** Cloudflare → *My Profile → API Tokens → Create Token → Vorlage „Edit Cloudflare Workers“*. Die **Account-ID** steht unter *Workers & Pages* in der rechten Seitenleiste.
 
 Fehlschläge des Daten-Jobs (Quelle gestört, zu wenige Sender) meldet GitHub per E-Mail; die Seite bleibt mit dem letzten guten Stand online.
 
-**Kosten-/Limit-Übersicht:** GitHub Actions privat 2.000 min/Monat (Verbrauch ≈ 250–400 min) · Cloudflare Pages Free: unbegrenzte Bandbreite, 500 Builds/Monat (Verbrauch ≈ 130), 20.000 Dateien (≈ 30). Begründung in [docs/DECISIONS.md](docs/DECISIONS.md).
+**Kosten/Limits:** GitHub Actions privat 2.000 min/Monat (Verbrauch ≈ 250–400 min) · Workers Free: statische Assets ohne Request-Kosten, Workers Builds 3.000 Build-Minuten/Monat. Begründung in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Datenquellen & Rechtliches
 
@@ -115,7 +117,7 @@ Fehlschläge des Daten-Jobs (Quelle gestört, zu wenige Sender) meldet GitHub pe
 
 ## Roadmap
 
-- [ ] Eigene Domain + Cloudflare verbinden
+- [ ] Eigene Domain verbinden
 - [ ] Weitere Sender auf Wunsch (Konfiguration in `pipeline/channels.ts`)
 - [ ] „Serie beobachten“: neue Termine eines Titels automatisch auf die Merkliste
 - [ ] Abonnierbarer Kalender-Feed (statische `.ics` je Merkliste via Share-Link)
